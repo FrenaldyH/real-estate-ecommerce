@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "darkMode": true,
+  "gridEnabling": false,
+  "detailLevel": "All",
+  "tablePositions": [
+    {
+      "name": "users",
+      "schemaName": "public",
+      "x": 450.4091040090394,
+      "y": -21.400052024946916
+    },
+    {
+      "name": "properties",
+      "schemaName": "public",
+      "x": -214.76332965984793,
+      "y": 5.521117527717877
+    },
+    {
+      "name": "property_types",
+      "schemaName": "public",
+      "x": -214.76332965984793,
+      "y": 425.1925498152142
+    },
+    {
+      "name": "facility_types",
+      "schemaName": "public",
+      "x": 124.30183945059161,
+      "y": -177.71130533954613
+    },
+    {
+      "name": "property_facilities",
+      "schemaName": "public",
+      "x": -238.51948800516539,
+      "y": -182.27400239066975
+    },
+    {
+      "name": "transactions",
+      "schemaName": "public",
+      "x": 126.46149020925668,
+      "y": 315.3508662419147
+    }
+  ],
+  "tableGroupCollapseStates": [],
+  "stickyNoteLayouts": [],
+  "referencePaths": [
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "users",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "owner_id"
+      ],
+      "secondTableName": "properties",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "property_types",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "type_id"
+      ],
+      "secondTableName": "properties",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "property_id"
+      ],
+      "secondTableName": "property_facilities",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "facility_types",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "facility_type_id"
+      ],
+      "secondTableName": "property_facilities",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "property_id"
+      ],
+      "secondTableName": "transactions",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "users",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "buyer_id"
+      ],
+      "secondTableName": "transactions",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    }
+  ]
+}
