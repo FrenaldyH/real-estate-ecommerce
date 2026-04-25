@@ -1,0 +1,137 @@
+Table users {
+  id                uint              [primary key]
+
+  username          varchar(50)       [not null, unique]
+  full_name         varchar(100)      [not null]
+  email             varchar(255)      [not null, unique]
+  phone             varchar(20)       [not null]
+  password          varchar(255)      [not null]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table agencies {
+  id                uint              [primary key]
+
+  agency_name       varchar(100)      [not null, unique]
+  address           varchar(255)      [not null]
+  phone             varchar(20)       [not null]
+  email             varchar(255)      [not null, unique]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table agents {
+  id                uint              [primary key]
+  user_id           uint              [not null, unique] // Agent is also a user
+  agency_id         uint              [unique] // An agent my not be associated with an agency. So owner can be an agent too
+
+  bio_description   text              [not null]
+  is_verified       boolean           [default: false]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table properties {
+  id                uint              [primary key]
+  type_id           uint              [not null]
+  agent_id          uint              [not null] // In this website, no properties have more than one agent
+
+  NOP_PBB           char(18)          [not null, unique]
+  title             varchar(255)      [not null]
+  description       text              [not null]
+  price             decimal(17, 2)    [not null]
+  address           varchar(255)      [not null]
+  city              varchar(100)      [not null] // For filtering
+  province          varchar(100)      [not null] // For filtering 
+  status            varchar(20)       [default: 'available'] // 'available', 'sold'
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table property_types {
+  id                uint              [primary key]
+  name              varchar(50)       [not null, unique]
+}
+
+Table facility_types {
+  id                uint              [primary key]
+  name              varchar(50)       [not null, unique]
+}
+
+Table property_facilities {
+  id                uint              [primary key]
+  property_id       uint              [not null]
+  facility_type_id  uint              [not null]
+
+  // A property can have multiple facilities, but each facility type can only be associated with a property once
+  indexes {
+    (property_id, facility_type_id)   [unique]  
+  }
+}
+
+// [FEATURE] A property can have multiple images and theres all one image to be a cover image for the property, so we can display it on the listing page
+Table property_images {
+  id                uint              [primary key]
+  property_id       uint              [not null]
+
+  image_url         varchar(255)      [not null]
+  is_primary        boolean           [default: false] // For displaying cover image on page
+  sort_order        uint              [default: 0] // For ordering images
+
+  created_at        timestamp         [default: `now()`]
+}
+
+// [FEATURE] Users can make a wishlist in the cart, so they can save the property for later without making a deal
+Table wishlists {
+  id                uint              [primary key]
+  user_id           uint              [not null]
+  property_id       uint              [not null]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+
+  // A user can only have a property in their wishlist once
+  indexes {
+    (user_id, property_id)            [unique]  
+  }
+}
+
+// [FEATURE] For every deal made, user can make review;
+Table reviews {
+  id                uint              [primary key]
+  user_id           uint              [not null]
+  property_id       uint              [not null] 
+
+  rating            tinyint           [not null]
+  comment           text              
+
+  created_at        timestamp         [default: `now()`]
+
+  // A user can only review a property once
+  indexes {
+    (user_id, property_id)            [unique]  
+  }
+}
+
+Ref: users.id - agents.user_id
+
+Ref: agents.agency_id < agencies.id
+
+Ref: properties.type_id < property_types.id
+Ref: properties.id < property_facilities.property_id
+Ref: facility_types.id < property_facilities.facility_type_id
+Ref: properties.agent_id < agents.id
+Ref: properties.id - property_images.property_id
+
+Ref: users.id < wishlists.user_id
+Ref: properties.id < wishlists.property_id
+
+Ref: users.id < reviews.user_id
+Ref: properties.id < reviews.property_id
+
+

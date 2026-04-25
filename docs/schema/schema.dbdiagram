@@ -1,0 +1,237 @@
+{
+  "version": "1.0.0",
+  "darkMode": true,
+  "gridEnabling": false,
+  "detailLevel": "All",
+  "tablePositions": [
+    {
+      "name": "users",
+      "schemaName": "public",
+      "x": 43.027882295496234,
+      "y": 650.2841940487133
+    },
+    {
+      "name": "agencies",
+      "schemaName": "public",
+      "x": 742.2598805147059,
+      "y": 855.4279426125919
+    },
+    {
+      "name": "agents",
+      "schemaName": "public",
+      "x": 372.7329604204962,
+      "y": 666.2841940487133
+    },
+    {
+      "name": "properties",
+      "schemaName": "public",
+      "x": 984.5654296875,
+      "y": 290
+    },
+    {
+      "name": "property_types",
+      "schemaName": "public",
+      "x": 1480.0992575252758,
+      "y": 324.07595645680146
+    },
+    {
+      "name": "facility_types",
+      "schemaName": "public",
+      "x": 1591.2356603285843,
+      "y": 450
+    },
+    {
+      "name": "property_facilities",
+      "schemaName": "public",
+      "x": 1286.2707878561582,
+      "y": 453.2686911190257
+    },
+    {
+      "name": "property_images",
+      "schemaName": "public",
+      "x": 309.51025390625,
+      "y": 290
+    },
+    {
+      "name": "wishlists",
+      "schemaName": "public",
+      "x": 513.7659409466911,
+      "y": 1094.1988812614889
+    },
+    {
+      "name": "reviews",
+      "schemaName": "public",
+      "x": 1008.6296673943011,
+      "y": -117.71213666130544
+    }
+  ],
+  "tableGroupCollapseStates": [],
+  "stickyNoteLayouts": [],
+  "referencePaths": [
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "users",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "user_id"
+      ],
+      "secondTableName": "agents",
+      "secondSchemaName": "public",
+      "secondRelation": "1",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "agency_id"
+      ],
+      "firstTableName": "agents",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "id"
+      ],
+      "secondTableName": "agencies",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "type_id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "id"
+      ],
+      "secondTableName": "property_types",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "property_id"
+      ],
+      "secondTableName": "property_facilities",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "facility_types",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "facility_type_id"
+      ],
+      "secondTableName": "property_facilities",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "agent_id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "id"
+      ],
+      "secondTableName": "agents",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "property_id"
+      ],
+      "secondTableName": "property_images",
+      "secondSchemaName": "public",
+      "secondRelation": "1",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "users",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "user_id"
+      ],
+      "secondTableName": "wishlists",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "property_id"
+      ],
+      "secondTableName": "wishlists",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "users",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "user_id"
+      ],
+      "secondTableName": "reviews",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    },
+    {
+      "firstFieldNames": [
+        "id"
+      ],
+      "firstTableName": "properties",
+      "firstSchemaName": "public",
+      "firstRelation": "1",
+      "secondFieldNames": [
+        "property_id"
+      ],
+      "secondTableName": "reviews",
+      "secondSchemaName": "public",
+      "secondRelation": "*",
+      "checkPoints": []
+    }
+  ]
+}
