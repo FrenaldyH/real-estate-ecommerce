@@ -1,2 +1,7 @@
 # env file
 .env
+.env.*
+
+# log files
+logs/*.log
+

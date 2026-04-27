@@ -4,7 +4,7 @@ Table users {
   username          varchar(50)       [not null, unique]
   full_name         varchar(100)      [not null]
   email             varchar(255)      [not null, unique]
-  phone             varchar(20)       [not null]
+  phone_number      varchar(20)       [not null]
   password          varchar(255)      [not null]
 
   created_at        timestamp         [default: `now()`]
@@ -16,7 +16,7 @@ Table agencies {
 
   agency_name       varchar(100)      [not null, unique]
   address           varchar(255)      [not null]
-  phone             varchar(20)       [not null]
+  phone_number      varchar(20)       [not null]
   email             varchar(255)      [not null, unique]
 
   created_at        timestamp         [default: `now()`]
@@ -26,7 +26,7 @@ Table agencies {
 Table agents {
   id                uint              [primary key]
   user_id           uint              [not null, unique] // Agent is also a user
-  agency_id         uint              [unique] // An agent my not be associated with an agency. So owner can be an agent too
+  agency_id         uint              // An agent my not be associated with an agency. So owner can be an agent too
 
   bio_description   text              [not null]
   is_verified       boolean           [default: false]

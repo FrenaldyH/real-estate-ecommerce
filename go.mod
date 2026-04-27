@@ -3,6 +3,8 @@ module github.com/FrenaldyH/real-estate-ecommerce/backend
 go 1.22.5
 
 require (
+	github.com/joho/godotenv v1.5.1
+	github.com/subosito/gotenv v1.6.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
 )
