@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS property_facility;
+DROP TABLE IF EXISTS property_facilities;

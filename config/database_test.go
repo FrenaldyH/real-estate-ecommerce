@@ -1,4 +1,4 @@
-package config
+package config_test
 
 import (
 	"testing"
@@ -6,6 +6,6 @@ import (
 	"github.com/subosito/gotenv"
 )
 
-func TestDBConnect(t *testing.T) {
-	gotenv.Load();
+func TestConnectDB(t *testing.T) {
+	gotenv.Load()
 }

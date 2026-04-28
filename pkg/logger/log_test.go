@@ -1,4 +1,4 @@
-package logger
+package logger_test
 
 import (
 	"bytes"
@@ -8,10 +8,12 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 )
 
 func TestLoggerInitialized(t *testing.T) {
-	if Log == nil {
+	if logger.Log == nil {
 		t.Fatal("Logger is not initialized")
 	}
 }
@@ -84,6 +86,6 @@ func TestLogLevelError(t *testing.T) {
 // Cleanup: Remove log files created during tests
 func TestMain(m *testing.M) {
 	code := m.Run()
-	os.RemoveAll("logs") // bersih-bersih
+	os.RemoveAll("logs")
 	os.Exit(code)
 }

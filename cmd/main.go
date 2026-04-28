@@ -13,9 +13,9 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		logger.Log.Warn("No .env file found")
 	}
-	logger.Log.Info("Environment variables loaded")
+	logger.Log.Debug("Environment variables loaded")
 
 	config.InitDB()
-	logger.Log.Debug("Database Initialized")
+	logger.Log.Info("Database Initialized")
 
 }

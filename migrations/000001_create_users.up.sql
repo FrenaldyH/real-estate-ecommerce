@@ -1,16 +1,20 @@
-CREATE TABLE
-  users (
-    id INT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    phone_number VARCHAR(20) NOT NULL,
-    'password' VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW (),
-    deleted_at TIMESTAMP DEFAULT NULL,
-  );
+CREATE TABLE IF NOT EXISTS users (
+    id              SERIAL PRIMARY KEY,
+    nik             CHAR(16)        NOT NULL,
+    username        VARCHAR(50)     NOT NULL,
+    full_name       VARCHAR(100)    NOT NULL,
+    email           VARCHAR(255)    NOT NULL,
+    phone_number    VARCHAR(20)     NOT NULL,
+    password        VARCHAR(255)    NOT NULL,
+    role            VARCHAR(10)     NOT NULL DEFAULT 'user',
 
--- INDEX FOR FEATURE
-CREATE INDEX users_username ON users (username);
+    created_at      TIMESTAMP       NOT NULL DEFAULT NOW(),
+    deleted_at      TIMESTAMP       DEFAULT NULL,
 
-CREATE INDEX users_full_name ON users (full_name);
+    CONSTRAINT users_nik_unique         UNIQUE (nik),
+    CONSTRAINT users_username_unique    UNIQUE (username),
+    CONSTRAINT users_email_unique       UNIQUE (email),
+    CONSTRAINT users_role_check         CHECK (role IN ('user', 'agent', 'admin'))
+);
+
+CREATE INDEX idx_users_deleted_at ON users (deleted_at);

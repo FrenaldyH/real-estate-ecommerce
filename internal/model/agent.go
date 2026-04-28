@@ -1,17 +1,26 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Agent struct {
-	ID             uint   `gorm:"primaryKey"`
-	UserID         uint   `gorm:"not null;uniqueIndex"`
-	AgencyID       *uint  `gorm:"Index"`
-	BioDescription string `gorm:"not null"`
-	IsVerified     bool   `gorm:"default:false"`
+	ID                  uint           `gorm:"primaryKey;autoIncrement"                            json:"id"`
+	UserID              uint           `gorm:"not null;uniqueIndex"                                json:"user_id"`
+	BioDescription      *string        `gorm:"type:text;default:null"                              json:"bio_description,omitempty"`
+	AgencyID            *uint          `gorm:"default:null"                                        json:"agency_id,omitempty"`
+	TotalPropertiesSold int            `gorm:"not null;default:0"                                  json:"total_properties_sold"`
+	CreatedAt           time.Time      `gorm:"autoCreateTime"                                      json:"created_at"`
+	DeletedAt           gorm.DeletedAt `gorm:"index"                                               json:"deleted_at,omitempty"`
 
-	CreatedAt time.Time  `gorm:"autoCreateTime"`
-	DeletedAt *time.Time `gorm:"index"`
+	// Relations
+	User       User       `gorm:"foreignKey:UserID"   json:"user,omitempty"`
+	Agency     *Agency    `gorm:"foreignKey:AgencyID" json:"agency,omitempty"`
+	Properties []Property `gorm:"foreignKey:AgentID"  json:"properties,omitempty"`
+}
 
-	User   User    `gorm:"foreignKey:UserID"`
-	Agency *Agency `gorm:"foreignKey:AgencyID"` // pointer karena nullable
+func (Agent) TableName() string {
+	return "agents"
 }

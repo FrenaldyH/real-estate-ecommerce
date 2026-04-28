@@ -1,14 +1,24 @@
 package model
 
-type PropertyFacility struct {
-	ID             uint `gorm:"primaryKey"`
-	PropertyID     uint `gorm:"not null"`
-	FacilityTypeID uint `gorm:"not null"`
+import (
+	"time"
 
-	// Relasi
-	Property     Property     `gorm:"foreignKey:PropertyID"`
-	FacilityType FacilityType `gorm:"foreignKey:FacilityTypeID"`
+	"gorm.io/gorm"
+)
+
+type PropertyFacility struct {
+	ID             uint           `gorm:"primaryKey;autoIncrement"    json:"id"`
+	PropertyID     uint           `gorm:"not null;index"              json:"property_id"`
+	FacilityTypeID uint           `gorm:"not null;index"              json:"facility_type_id"`
+	Amount         int            `gorm:"not null;default:1"          json:"amount"`
+	CreatedAt      time.Time      `gorm:"autoCreateTime"              json:"created_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index"                       json:"deleted_at,omitempty"`
+
+	// Relations
+	Property     Property     `gorm:"foreignKey:PropertyID"     json:"property,omitempty"`
+	FacilityType FacilityType `gorm:"foreignKey:FacilityTypeID" json:"facility_type,omitempty"`
 }
 
-// Composite unique index
-func (PropertyFacility) TableName() string { return "property_facilities" }
+func (PropertyFacility) TableName() string {
+	return "property_facilities"
+}
