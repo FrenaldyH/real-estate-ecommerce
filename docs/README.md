@@ -6,6 +6,10 @@
 
 ## My Notes
 
+### How To Make Database Schemas
+
+To generate image and make database logic i use 
+
 ### How To Commits
 
 For this project i set a rules for commit base on this [Link](https://www.conventionalcommits.org/en/v1.0.0/)

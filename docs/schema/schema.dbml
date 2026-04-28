@@ -1,5 +1,5 @@
 Table users {
-  id                uint              [primary key]
+  id                int              [primary key]
 
   username          varchar(50)       [not null, unique]
   full_name         varchar(100)      [not null]
@@ -12,7 +12,7 @@ Table users {
 }
 
 Table agencies {
-  id                uint              [primary key]
+  id                int              [primary key]
 
   agency_name       varchar(100)      [not null, unique]
   address           varchar(255)      [not null]
@@ -24,9 +24,9 @@ Table agencies {
 }
 
 Table agents {
-  id                uint              [primary key]
-  user_id           uint              [not null, unique] // Agent is also a user
-  agency_id         uint              // An agent my not be associated with an agency. So owner can be an agent too
+  id                int               [primary key]
+  user_id           int               [not null, unique] // Agent is also a user
+  agency_id         int               // An agent *may* not be associated with an agency. So *an* owner can be an agent too.
 
   bio_description   text              [not null]
   is_verified       boolean           [default: false]
@@ -36,9 +36,9 @@ Table agents {
 }
 
 Table properties {
-  id                uint              [primary key]
-  type_id           uint              [not null]
-  agent_id          uint              [not null] // In this website, no properties have more than one agent
+  id                int               [primary key]
+  type_id           int               [not null]
+  agent_id          int               [not null] // In this website, no properties have more than one agent
 
   NOP_PBB           char(18)          [not null, unique]
   title             varchar(255)      [not null]
@@ -47,6 +47,7 @@ Table properties {
   address           varchar(255)      [not null]
   city              varchar(100)      [not null] // For filtering
   province          varchar(100)      [not null] // For filtering 
+  listing_type      varchar(20)       [not null] // 'rent' or 'sell' or 'lease'
   status            varchar(20)       [default: 'available'] // 'available', 'sold'
 
   created_at        timestamp         [default: `now()`]
@@ -54,19 +55,19 @@ Table properties {
 }
 
 Table property_types {
-  id                uint              [primary key]
+  id                int               [primary key]
   name              varchar(50)       [not null, unique]
 }
 
 Table facility_types {
-  id                uint              [primary key]
+  id                int               [primary key]
   name              varchar(50)       [not null, unique]
 }
 
 Table property_facilities {
-  id                uint              [primary key]
-  property_id       uint              [not null]
-  facility_type_id  uint              [not null]
+  id                int               [primary key]
+  property_id       int               [not null]
+  facility_type_id  int               [not null]
 
   // A property can have multiple facilities, but each facility type can only be associated with a property once
   indexes {
@@ -74,26 +75,25 @@ Table property_facilities {
   }
 }
 
-// [FEATURE] A property can have multiple images and theres all one image to be a cover image for the property, so we can display it on the listing page
+// [FEATURE] A property can have multiple images, and there is always one image to be the cover image
 Table property_images {
-  id                uint              [primary key]
-  property_id       uint              [not null]
+  id                int               [primary key]
+  property_id       int               [not null]
 
   image_url         varchar(255)      [not null]
   is_primary        boolean           [default: false] // For displaying cover image on page
-  sort_order        uint              [default: 0] // For ordering images
+  sort_order        int               [default: 0] // For ordering images
 
   created_at        timestamp         [default: `now()`]
 }
 
-// [FEATURE] Users can make a wishlist in the cart, so they can save the property for later without making a deal
+// [FEATURE] Users can add  properties to a wishlist, so they can save them for later without making a deal.
 Table wishlists {
-  id                uint              [primary key]
-  user_id           uint              [not null]
-  property_id       uint              [not null]
+  id                int               [primary key]
+  user_id           int               [not null]
+  property_id       int               [not null]
 
   created_at        timestamp         [default: `now()`]
-  deleted_at        timestamp         [default: null]
 
   // A user can only have a property in their wishlist once
   indexes {
@@ -101,16 +101,17 @@ Table wishlists {
   }
 }
 
-// [FEATURE] For every deal made, user can make review;
+// [FEATURE] For every deal made, a user can leave a review.
 Table reviews {
-  id                uint              [primary key]
-  user_id           uint              [not null]
-  property_id       uint              [not null] 
+  id                int               [primary key]
+  user_id           int               [not null]
+  property_id       int               [not null] 
 
   rating            tinyint           [not null]
   comment           text              
 
   created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
 
   // A user can only review a property once
   indexes {
@@ -126,7 +127,7 @@ Ref: properties.type_id < property_types.id
 Ref: properties.id < property_facilities.property_id
 Ref: facility_types.id < property_facilities.facility_type_id
 Ref: properties.agent_id < agents.id
-Ref: properties.id - property_images.property_id
+Ref: properties.id > property_images.property_id
 
 Ref: users.id < wishlists.user_id
 Ref: properties.id < wishlists.property_id

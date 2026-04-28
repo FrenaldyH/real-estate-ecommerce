@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -49,30 +48,4 @@ func ConnectDB() {
 	} else {
 		logger.Log.Info(fmt.Sprintf("Database successfully connected at %s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT")))
 	}
-}
-
-func MigrateDB() {
-	err := DB.AutoMigrate(
-		&model.User{},
-		&model.Agency{},
-		&model.Agent{},
-		&model.PropertyType{},
-		&model.FacilityType{},
-		&model.Property{},
-		&model.PropertyFacility{},
-		&model.PropertyImage{},
-		&model.Wishlist{},
-		&model.Review{},
-	)
-
-	if err != nil {
-		logger.Log.Error("Failed to Migrate: %v", err)
-	} else {
-		logger.Log.Info("Database successfully migrated")
-	}
-}
-
-func InitDB() {
-	ConnectDB()
-	MigrateDB()
 }
