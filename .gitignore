@@ -5,3 +5,6 @@
 # log files
 logs/*.log
 
+# migrations file
+internal/migrations
+
