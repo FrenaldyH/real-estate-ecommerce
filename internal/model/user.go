@@ -15,7 +15,7 @@ const (
 )
 
 type User struct {
-	ID          uint           `gorm:"primaryKey;autoIncrement"                        json:"id"`
+	ID          uint           `gorm:"primaryKey;autoIncrement"                       	 json:"id"`
 	NIK         string         `gorm:"type:char(16);not null;uniqueIndex"               json:"nik"`
 	Username    string         `gorm:"type:varchar(50);not null;uniqueIndex"            json:"username"`
 	FullName    string         `gorm:"type:varchar(100);not null"                       json:"full_name"`
@@ -42,4 +42,8 @@ func (u *User) IsAgent() bool {
 
 func (u *User) IsAdmin() bool {
 	return u.Role == RoleAdmin
+}
+
+func (u *User) IsUser() bool {
+	return u.Role == RoleUser
 }

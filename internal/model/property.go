@@ -6,9 +6,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type ListingType string
-type PropertyStatus string
-type PaymentMethod string
+type (
+	ListingType    string
+	PropertyStatus string
+	PaymentMethod  string
+)
 
 const (
 	ListingTypeSell ListingType = "dijual"
@@ -47,8 +49,8 @@ type Property struct {
 	HasCarAccess    bool    `gorm:"not null;default:false"                           json:"has_car_access"`
 	ElectricalPower int     `gorm:"not null;default:0"                               json:"electrical_power"`
 
-	NOPPBB string `gorm:"type:char(18);not null;uniqueIndex"               json:"noppbb"`
-	IMBPBB bool   `gorm:"column:imb_pbb;not null;default:false"            json:"imb_pbb"`
+	NOP_PBB string `gorm:"type:char(18);not null;uniqueIndex"               json:"nop_pbb"`
+	IMB_PBB bool   `gorm:"column:imb_pbb;not null;default:false"            json:"imb_pbb"`
 
 	CreatedAt time.Time      `gorm:"autoCreateTime"                                   json:"created_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index"                                            json:"deleted_at,omitempty"`

@@ -7,7 +7,7 @@ import (
 )
 
 type FacilityType struct {
-	ID        uint           `gorm:"primaryKey;autoIncrement"                json:"id"`
+	ID        uint           `gorm:"primaryKey;autoIncrement"                	json:"id"`
 	Name      string         `gorm:"type:varchar(50);not null;uniqueIndex"    json:"name"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"                           json:"created_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index"                                    json:"deleted_at,omitempty"`

@@ -30,6 +30,7 @@ Table agents {
   id                int               [primary key]
   user_id           int               [not null, unique]
 
+  siup4             varchar(50)       [not null, unique]                  
   bio_description   text              [default: null]
   agencies_id       int               [default: null]
   total_properties_sold INT           [default: 0]
@@ -38,9 +39,18 @@ Table agents {
   deleted_at        timestamp         [default: null]
 }
 
+Table property_types {
+  id int [primary key]
+  name int [not null]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
 Table properties {
   id                int               [primary key]
-  agent_id         int                [not null] 
+  agent_id          int               [not null] 
+  property_type_id  int               [not null]
 
   title             varchar(255)      [not null]
   description       text              [not null]
@@ -50,7 +60,6 @@ Table properties {
   city              varchar(100)      [not null] 
   province          varchar(100)      [not null]  
 
-  property_type     varchar(20)       [not null]
   listing_type      varchar(20)       [not null] 
   status            varchar(20)       [default: 'available'] 
   payment_method    varchar(20)       [not null]  
@@ -60,7 +69,7 @@ Table properties {
   has_car_access    boolean           [default: false]
   electrical_power  int               [default: 0]
 
-  NOPPBB            char(18)          [not null, unique]
+  NOP_PBB            char(18)          [not null, unique]
   IMB_PBB           boolean           [default: false]
 
   created_at        timestamp         [default: `now()`]
@@ -154,6 +163,6 @@ Ref: properties.id < wishlists.property_id
 
 Ref: properties.agent_id > agents.id
 
-
+Ref: property_types.id < properties.property_type_id
 
 
