@@ -35,7 +35,7 @@ func getDsn() (string, error) {
 	return dsn, nil
 }
 
-func ConnectDB() {
+func connectDB() {
 	dsn, err := getDsn()
 	if err != nil {
 		logger.Log.Error("Database Error: %v", err)

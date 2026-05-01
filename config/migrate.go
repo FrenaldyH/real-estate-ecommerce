@@ -7,7 +7,7 @@ import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 )
 
-func MigrateDB() {
+func migrateDB() {
 	err := DB.AutoMigrate(
 		&model.Agency{},
 		&model.User{},
@@ -28,7 +28,7 @@ func MigrateDB() {
 	}
 }
 
-func DropDB() {
+func dropDB() {
 	err := DB.Migrator().DropTable(
 		&model.Agency{},
 		&model.User{},

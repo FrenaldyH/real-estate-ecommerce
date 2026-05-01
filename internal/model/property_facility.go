@@ -22,3 +22,7 @@ type PropertyFacility struct {
 func (PropertyFacility) TableName() string {
 	return "property_facilities"
 }
+
+func (PropertyFacility) UniqueIndexes() []string {
+	return []string{"property_id,facility_type_id"}
+}
