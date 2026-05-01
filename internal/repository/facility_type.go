@@ -11,6 +11,7 @@ type FacilityTypeRepository interface {
 	Create(ft *model.FacilityType) error
 	FindByName(name string) (*model.FacilityType, error)
 	FindByID(id uint) (*model.FacilityType, error)
+	FindAll() ([]model.FacilityType, error)
 	Update(ft *model.FacilityType) error
 	Delete(id uint) error
 }
@@ -41,6 +42,12 @@ func (r *facilityTypeRepository) FindByID(id uint) (*model.FacilityType, error) 
 	var ft model.FacilityType
 	err := r.db.First(&ft, id).Error
 	return &ft, err
+}
+
+func (r *facilityTypeRepository) FindAll() ([]model.FacilityType, error) {
+	var fts []model.FacilityType
+	err := r.db.Find(&fts).Error
+	return fts, err
 }
 
 func (r *facilityTypeRepository) Update(ft *model.FacilityType) error {

@@ -27,6 +27,14 @@ func NewAgentRepository(db *gorm.DB) AgentRepository {
 	return &agentRepository{db: db}
 }
 
+// Helper
+
+func (r *agentRepository) baseQuery() *gorm.DB {
+	return r.db.
+		Joins("Users").
+		Joins("Agency")
+}
+
 // Method
 
 func (r *agentRepository) Create(agent *model.Agent) error {
@@ -35,18 +43,14 @@ func (r *agentRepository) Create(agent *model.Agent) error {
 
 func (r *agentRepository) FindByID(id uint) (*model.Agent, error) {
 	var agent model.Agent
-	err := r.db.
-		Joins("User").
-		Joins("Agency").
+	err := r.baseQuery().
 		First(&agent, id).Error
 	return &agent, err
 }
 
 func (r *agentRepository) FindByUserID(userID uint) (*model.Agent, error) {
 	var agent model.Agent
-	err := r.db.
-		Joins("User").
-		Joins("Agency").
+	err := r.baseQuery().
 		Where("user_id = ?", userID).
 		First(&agent).Error
 	return &agent, err
@@ -54,18 +58,14 @@ func (r *agentRepository) FindByUserID(userID uint) (*model.Agent, error) {
 
 func (r *agentRepository) FindAll() ([]model.Agent, error) {
 	var agents []model.Agent
-	err := r.db.
-		Joins("User").
-		Joins("Agency").
+	err := r.baseQuery().
 		Find(&agents).Error
 	return agents, err
 }
 
 func (r *agentRepository) FindByTotalPropertiesSold(limit int) ([]model.Agent, error) {
 	var agents []model.Agent
-	err := r.db.
-		Joins("User").
-		Joins("Agency").
+	err := r.baseQuery().
 		Order("total_properties_sold DESC").
 		Limit(limit).
 		Find(&agents).Error

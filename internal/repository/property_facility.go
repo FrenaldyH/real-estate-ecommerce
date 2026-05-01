@@ -11,8 +11,17 @@ type PropertyFacilityRepository interface {
 	Create(pf *model.PropertyFacility) error
 	FindByID(id uint) (*model.PropertyFacility, error)
 	FindByPropertyIDAndFacilityTypeID(propertyID uint, facilityTypeID uint) (*model.PropertyFacility, error)
+	FindAll() ([]model.PropertyFacility, error)
 	Update(pf *model.PropertyFacility) error
 	Delete(id uint) error
+}
+
+// Helper
+
+func (r *propertyFacilityRepository) baseQuery() *gorm.DB {
+	return r.db.
+		Joins("FacilityType").
+		Joins("Property")
 }
 
 // Implement
@@ -33,7 +42,8 @@ func (r *propertyFacilityRepository) Create(pf *model.PropertyFacility) error {
 
 func (r *propertyFacilityRepository) FindByID(id uint) (*model.PropertyFacility, error) {
 	var pf model.PropertyFacility
-	err := r.db.First(&pf, id).Error
+	err := r.baseQuery().
+		First(&pf, id).Error
 	return &pf, err
 }
 
@@ -43,6 +53,13 @@ func (r *propertyFacilityRepository) FindByPropertyIDAndFacilityTypeID(propertyI
 		Where("property_id = ? AND facility_type_id = ?", propertyID, facilityTypeID).
 		First(&pf).Error
 	return &pf, err
+}
+
+func (r *propertyFacilityRepository) FindAll() ([]model.PropertyFacility, error) {
+	var pfs []model.PropertyFacility
+	err := r.baseQuery().
+		Find(&pfs).Error
+	return pfs, err
 }
 
 func (r *propertyFacilityRepository) Update(pf *model.PropertyFacility) error {

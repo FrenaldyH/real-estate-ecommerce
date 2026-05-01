@@ -1,0 +1,118 @@
+package repository
+
+import (
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"gorm.io/gorm"
+)
+
+// Interface
+
+type PropertyRepository interface {
+	Create(p *model.Property) error
+	FindByID(id uint) (*model.Property, error)
+	FindAll() ([]model.Property, error)
+	FindByCity(city string) ([]model.Property, error)
+	FindByProvince(province string) ([]model.Property, error)
+	FindByStatus(status model.PropertyStatus) ([]model.Property, error)
+	FindByPropertyTypeName(name string) ([]model.Property, error)
+	FindByPriceRange(min, max float64) ([]model.Property, error)
+	FindByListingType(listingType model.ListingType) ([]model.Property, error)
+	Update(p *model.Property) error
+	Delete(id uint) error
+}
+
+// Implement
+
+type propertyRepository struct {
+	db *gorm.DB
+}
+
+func NewPropertyRepository(db *gorm.DB) PropertyRepository {
+	return &propertyRepository{db: db}
+}
+
+// Helper
+
+func (r *propertyRepository) baseQuery() *gorm.DB {
+	return r.db.
+		Joins("PropertyType").             // one-to-one → Joins
+		Joins("Agent").                    // one-to-one → Joins
+		Preload("Images").                 // one-to-many → Preload
+		Preload("Facilities.FacilityType") // one-to-many → Preload
+}
+
+// Method
+
+func (r *propertyRepository) Create(p *model.Property) error {
+	return r.db.Create(p).Error
+}
+
+func (r *propertyRepository) FindByID(id uint) (*model.Property, error) {
+	var p model.Property
+	err := r.baseQuery().
+		First(&p, id).Error
+	return &p, err
+}
+
+func (r *propertyRepository) FindAll() ([]model.Property, error) {
+	var ps []model.Property
+	err := r.baseQuery().
+		Find(&ps).Error
+	return ps, err
+}
+
+func (r *propertyRepository) FindByCity(city string) ([]model.Property, error) {
+	var ps []model.Property
+	err := r.baseQuery().
+		Where("properties.city = ?", city).
+		Find(&ps).Error
+	return ps, err
+}
+
+func (r *propertyRepository) FindByProvince(province string) ([]model.Property, error) {
+	var ps []model.Property
+	err := r.baseQuery().
+		Where("properties.province = ?", province).
+		Find(&ps).Error
+	return ps, err
+}
+
+func (r *propertyRepository) FindByStatus(status model.PropertyStatus) ([]model.Property, error) {
+	var ps []model.Property
+	err := r.baseQuery().
+		Where("properties.status = ?", status).
+		Find(&ps).Error
+	return ps, err
+}
+
+func (r *propertyRepository) FindByPropertyTypeName(name string) ([]model.Property, error) {
+	var ps []model.Property
+	err := r.baseQuery().
+		Where("property_types.name = ?", name).
+		Find(&ps).Error
+	return ps, err
+}
+
+func (r *propertyRepository) FindByPriceRange(min float64, max float64) ([]model.Property, error) {
+	var ps []model.Property
+	err := r.baseQuery().
+		Where("properties.price BETWEEN ? AND ?", min, max).
+		Find(&ps).Error
+	return ps, err
+}
+
+func (r *propertyRepository) FindByListingType(listingType model.ListingType) ([]model.Property, error) {
+	var ps []model.Property
+	err := r.baseQuery().
+		Where("properties.listing_type = ?", listingType).
+		Find(&ps).Error
+	return ps, err
+}
+
+func (r *propertyRepository) Update(p *model.Property) error {
+	return r.db.Save(p).Error
+}
+
+func (r *propertyRepository) Delete(id uint) error {
+	return r.db.Delete(&model.Property{}, id).Error
+}
