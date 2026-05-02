@@ -3,7 +3,7 @@ package request
 import "github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 
 type UpdateUserRoleRequest struct {
-	Role model.UserRole `json:"role" binding:"required,oneof=user agent admin"`
+	Role model.UserRole `json:"role" binding:"required,oneof=user agent admin owner"`
 }
 
 type CreateAgentRequest struct {

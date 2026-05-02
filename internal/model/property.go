@@ -21,10 +21,9 @@ const (
 	StatusRented    PropertyStatus = "rented"
 	StatusInactive  PropertyStatus = "inactive"
 
-	PaymentCash         PaymentMethod = "cash"
-	PaymentKPR          PaymentMethod = "kpr"
-	PaymentCashBertahap PaymentMethod = "cash_bertahap"
-	PaymentAll          PaymentMethod = "all"
+	PaymentCash PaymentMethod = "cash"
+	PaymentKPR  PaymentMethod = "kpr"
+	PaymentAll  PaymentMethod = "all"
 )
 
 type Property struct {
