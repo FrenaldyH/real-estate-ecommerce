@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -35,12 +36,22 @@ func (r *facilityTypeRepository) Create(ft *model.FacilityType) error {
 func (r *facilityTypeRepository) FindByName(name string) (*model.FacilityType, error) {
 	var ft model.FacilityType
 	err := r.db.Where("name = ?", name).First(&ft).Error
+	if err != nil {
+		logger.Log.Info("Name not found")
+		return nil, err
+	}
+
 	return &ft, err
 }
 
 func (r *facilityTypeRepository) FindByID(id uint) (*model.FacilityType, error) {
 	var ft model.FacilityType
 	err := r.db.First(&ft, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
+
 	return &ft, err
 }
 

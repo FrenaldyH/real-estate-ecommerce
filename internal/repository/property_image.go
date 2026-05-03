@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,11 @@ func (r *propertyImageRepository) FindByID(id uint) (*model.PropertyImage, error
 	var pi model.PropertyImage
 	err := r.baseQuery().
 		First(&pi, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
+
 	return &pi, err
 }
 
@@ -51,6 +57,11 @@ func (r *propertyImageRepository) FindByPropertyId(propertyID uint) ([]model.Pro
 	err := r.db.
 		Where("property_id = ?", propertyID).
 		Find(&pis).Error
+	if err != nil {
+		logger.Log.Info("Property ID not found")
+		return nil, err
+	}
+
 	return pis, err
 }
 
@@ -59,6 +70,11 @@ func (r *propertyImageRepository) FindByPropertyIDAndPropertyImageID(propertyID 
 	err := r.db.
 		Where("id = ? AND property_id = ?", propertyID, propertyImageID).
 		First(&pi).Error
+	if err != nil {
+		logger.Log.Info("Property ID AND PropertyImage not found")
+		return nil, err
+	}
+
 	return &pi, err
 }
 

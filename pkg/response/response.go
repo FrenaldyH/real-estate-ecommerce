@@ -21,6 +21,14 @@ func OK(c *gin.Context, message string, data interface{}) {
 	})
 }
 
+func Created(c *gin.Context, message string, data interface{}) {
+	c.JSON(http.StatusCreated, Response{
+		Success: true,
+		Message: message,
+		Data:    data,
+	})
+}
+
 func BadRequest(c *gin.Context, err string) {
 	c.JSON(http.StatusBadRequest, Response{
 		Success: false,
@@ -44,6 +52,20 @@ func NotFound(c *gin.Context, err string) {
 
 func InternalError(c *gin.Context, err string) {
 	c.JSON(http.StatusInternalServerError, Response{
+		Success: false,
+		Error:   err,
+	})
+}
+
+func Forbidden(c *gin.Context) {
+	c.JSON(http.StatusForbidden, Response{
+		Success: false,
+		Error:   "akses ditolak",
+	})
+}
+
+func ValidationError(c *gin.Context, err string) {
+	c.JSON(http.StatusUnprocessableEntity, Response{
 		Success: false,
 		Error:   err,
 	})

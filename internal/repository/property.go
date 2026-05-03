@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -51,6 +52,11 @@ func (r *propertyRepository) FindByID(id uint) (*model.Property, error) {
 	var p model.Property
 	err := r.baseQuery().
 		First(&p, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
+
 	return &p, err
 }
 
@@ -66,6 +72,7 @@ func (r *propertyRepository) FindByCity(city string) ([]model.Property, error) {
 	err := r.baseQuery().
 		Where("properties.city = ?", city).
 		Find(&ps).Error
+
 	return ps, err
 }
 
@@ -74,6 +81,7 @@ func (r *propertyRepository) FindByProvince(province string) ([]model.Property, 
 	err := r.baseQuery().
 		Where("properties.province = ?", province).
 		Find(&ps).Error
+
 	return ps, err
 }
 
@@ -82,6 +90,7 @@ func (r *propertyRepository) FindByStatus(status model.PropertyStatus) ([]model.
 	err := r.baseQuery().
 		Where("properties.status = ?", status).
 		Find(&ps).Error
+
 	return ps, err
 }
 
@@ -90,6 +99,7 @@ func (r *propertyRepository) FindByPropertyTypeName(name string) ([]model.Proper
 	err := r.baseQuery().
 		Where("property_types.name = ?", name).
 		Find(&ps).Error
+
 	return ps, err
 }
 

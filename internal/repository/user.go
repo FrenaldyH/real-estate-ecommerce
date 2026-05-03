@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -36,24 +37,44 @@ func (r *userRepository) Create(user *model.User) error {
 func (r *userRepository) FindByID(id uint) (*model.User, error) {
 	var user model.User
 	err := r.db.First(&user, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
+
 	return &user, err
 }
 
 func (r *userRepository) FindByNIK(nik string) (*model.User, error) {
 	var user model.User
 	err := r.db.Where("nik = ?", nik).First(&user).Error
+	if err != nil {
+		logger.Log.Info("NIK not found")
+		return nil, err
+	}
+
 	return &user, err
 }
 
 func (r *userRepository) FindByEmail(email string) (*model.User, error) {
 	var user model.User
 	err := r.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		logger.Log.Info("Email not found")
+		return nil, err
+	}
+
 	return &user, err
 }
 
 func (r *userRepository) FindByUsername(username string) (*model.User, error) {
 	var user model.User
 	err := r.db.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		logger.Log.Info("Username not found")
+		return nil, err
+	}
+
 	return &user, err
 }
 

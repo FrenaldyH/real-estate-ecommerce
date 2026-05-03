@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -35,6 +36,10 @@ func (r *propertyTypeRepository) Create(pt *model.PropertyType) error {
 func (r *propertyTypeRepository) FindByID(id uint) (*model.PropertyType, error) {
 	var pt model.PropertyType
 	err := r.db.First(&pt, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
 	return &pt, err
 }
 
@@ -43,6 +48,11 @@ func (r *propertyTypeRepository) FindByName(name string) (*model.PropertyType, e
 	err := r.db.
 		Where("name = ?", name).
 		First(&pt).Error
+	if err != nil {
+		logger.Log.Info("Name not found")
+		return nil, err
+	}
+
 	return &pt, err
 }
 

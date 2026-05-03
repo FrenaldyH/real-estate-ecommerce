@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -44,6 +45,11 @@ func (r *propertyFacilityRepository) FindByID(id uint) (*model.PropertyFacility,
 	var pf model.PropertyFacility
 	err := r.baseQuery().
 		First(&pf, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
+
 	return &pf, err
 }
 
@@ -52,6 +58,11 @@ func (r *propertyFacilityRepository) FindByPropertyIDAndFacilityTypeID(propertyI
 	err := r.db.
 		Where("property_id = ? AND facility_type_id = ?", propertyID, facilityTypeID).
 		First(&pf).Error
+	if err != nil {
+		logger.Log.Info("ID AND FacilityType not found")
+		return nil, err
+	}
+
 	return &pf, err
 }
 

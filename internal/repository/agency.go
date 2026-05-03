@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -10,6 +11,7 @@ import (
 type AgencyRepository interface {
 	Create(agency *model.Agency) error
 	FindByID(id uint) (*model.Agency, error)
+	FindByNIB(nib string) (*model.Agency, error)
 	FindByEmail(email string) (*model.Agency, error)
 	FindAll() ([]model.Agency, error)
 	Update(agency *model.Agency) error
@@ -35,18 +37,30 @@ func (r *agencyRepository) Create(agency *model.Agency) error {
 func (r *agencyRepository) FindByID(id uint) (*model.Agency, error) {
 	var agency model.Agency
 	err := r.db.First(&agency, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
 	return &agency, err
 }
 
 func (r *agencyRepository) FindByNIB(nib string) (*model.Agency, error) {
 	var agency model.Agency
 	err := r.db.Where("nib = ?", nib).First(&agency).Error
+	if err != nil {
+		logger.Log.Info("NIB not found")
+		return nil, err
+	}
 	return &agency, err
 }
 
 func (r *agencyRepository) FindByEmail(email string) (*model.Agency, error) {
 	var agency model.Agency
 	err := r.db.Where("email = ?", email).First(&agency).Error
+	if err != nil {
+		logger.Log.Info("Email not found")
+		return nil, err
+	}
 	return &agency, err
 }
 

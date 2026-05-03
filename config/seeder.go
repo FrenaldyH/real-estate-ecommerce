@@ -21,7 +21,7 @@ func RunSeeder(db *gorm.DB) {
 	seedPropertyFacilities(db)
 	seedReviews(db)
 	seedWishlists(db)
-	log.Println("✅ Seeder selesai!")
+	log.Println("Seeder selesai!")
 }
 
 // 1. USERS

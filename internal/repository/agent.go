@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -45,6 +46,11 @@ func (r *agentRepository) FindByID(id uint) (*model.Agent, error) {
 	var agent model.Agent
 	err := r.baseQuery().
 		First(&agent, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
+
 	return &agent, err
 }
 
@@ -53,6 +59,11 @@ func (r *agentRepository) FindByUserID(userID uint) (*model.Agent, error) {
 	err := r.baseQuery().
 		Where("user_id = ?", userID).
 		First(&agent).Error
+	if err != nil {
+		logger.Log.Info("User ID not found")
+		return nil, err
+	}
+
 	return &agent, err
 }
 

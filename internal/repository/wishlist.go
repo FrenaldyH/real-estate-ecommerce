@@ -1,7 +1,10 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +46,11 @@ func (r *wishlistRepository) FindByID(id uint) (*model.Wishlist, error) {
 	var w model.Wishlist
 	err := r.baseQuery().
 		First(&w, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
+
 	return &w, err
 }
 
@@ -51,6 +59,11 @@ func (r *wishlistRepository) FindByUserID(userID uint) ([]model.Wishlist, error)
 	err := r.baseQuery().
 		Where("wishlists.user_id = ?", userID).
 		Find(&ws).Error
+	if err != nil {
+		logger.Log.Info("User ID not found")
+		return nil, err
+	}
+
 	return ws, err
 }
 
@@ -59,6 +72,11 @@ func (r *wishlistRepository) FindByUserIDAndPropertyID(userID, propertyID uint) 
 	err := r.db.Unscoped(). // include soft deleted
 				Where("user_id = ? AND property_id = ?", userID, propertyID).
 				First(&w).Error
+	if err != nil {
+		logger.Log.Info(fmt.Sprintf("User ID %s AND Property ID %s not found", userID, propertyID))
+		return nil, err
+	}
+
 	return &w, err
 }
 

@@ -1,7 +1,10 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -42,6 +45,10 @@ func (r *reviewRepository) FindByID(id uint) (*model.Review, error) {
 	var review model.Review
 	err := r.baseQuery().
 		First(&review, id).Error
+	if err != nil {
+		logger.Log.Info("ID not found")
+		return nil, err
+	}
 	return &review, err
 }
 
@@ -66,6 +73,11 @@ func (r *reviewRepository) FindByUserIDAndPropertyID(userID, propertyID uint) (*
 	err := r.db.
 		Where("user_id = ? AND property_id = ?", userID, propertyID).
 		First(&review).Error
+	if err != nil {
+		logger.Log.Info(fmt.Sprint("User with user ID %s AND property ID %s not found", userID, propertyID))
+		return nil, err
+	}
+
 	return &review, err
 }
 
