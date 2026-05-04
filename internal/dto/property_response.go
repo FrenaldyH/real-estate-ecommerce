@@ -1,4 +1,4 @@
-package response
+package dto
 
 import "github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 
@@ -54,7 +54,6 @@ type PropertyDetailResponse struct {
 	FacingDirection *string              `json:"facing_direction,omitempty"`
 	HasCarAccess    bool                 `json:"has_car_access"`
 	ElectricalPower int                  `json:"electrical_power"`
-	NOP_PBB         string               `json:"nop_pbb"`
 	IMB_PBB         bool                 `json:"imb_pbb"`
 
 	// Nested

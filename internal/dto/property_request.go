@@ -1,4 +1,4 @@
-package request
+package dto
 
 import "github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 
@@ -19,8 +19,7 @@ type CreatePropertyRequest struct {
 	HasCarAccess    bool    `json:"has_car_access"   binding:"omitempty"`
 	ElectricalPower int     `json:"electrical_power" binding:"omitempty,gte=0"`
 
-	NOP_PBB string `json:"nop_pbb" binding:"required,numeric,len=18"`
-	IMB_PBB bool   `json:"imb_pbb" binding:"omitempty"`
+	IMB_PBB bool `json:"imb_pbb" binding:"omitempty"`
 }
 
 type CreatePropertyTypeRequest struct {

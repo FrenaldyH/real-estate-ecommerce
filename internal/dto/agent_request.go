@@ -1,9 +1,9 @@
-package request
+package dto
 
 import "github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 
 type UpdateUserRoleRequest struct {
-	Role model.UserRole `json:"role" binding:"required,oneof=user agent admin owner"`
+	Role model.UserRole `json:"role" binding:"required,oneof=user agent owner"`
 }
 
 type CreateAgentRequest struct {

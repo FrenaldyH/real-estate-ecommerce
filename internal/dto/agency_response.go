@@ -1,6 +1,6 @@
-package response
+package dto
 
-type CreateAgencyResponse struct {
+type AgencyResponse struct {
 	ID          uint   `json:"id"`
 	AgencyName  string `json:"agency_name"`
 	Address     string `json:"address"`

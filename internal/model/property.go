@@ -6,26 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type (
-	ListingType    string
-	PropertyStatus string
-	PaymentMethod  string
-)
-
-const (
-	ListingTypeSell ListingType = "dijual"
-	ListingTypeRent ListingType = "disewa"
-
-	StatusAvailable PropertyStatus = "available"
-	StatusSold      PropertyStatus = "sold"
-	StatusRented    PropertyStatus = "rented"
-	StatusInactive  PropertyStatus = "inactive"
-
-	PaymentCash PaymentMethod = "cash"
-	PaymentKPR  PaymentMethod = "kpr"
-	PaymentAll  PaymentMethod = "all"
-)
-
 type Property struct {
 	ID             uint `gorm:"primaryKey;autoIncrement"                        json:"id"`
 	AgentID        uint `gorm:"not null;index"                                  json:"agent_id"`

@@ -14,7 +14,8 @@ type AgentRepository interface {
 	FindByUserID(userID uint) (*model.Agent, error)
 	FindAll() ([]model.Agent, error)
 	FindByTotalPropertiesSold(limit int) ([]model.Agent, error)
-	Update(agent model.Agent) error
+	FindBySIUP4(userID uint) (*model.Agent, error)
+	Update(agent *model.Agent) error
 	Delete(id uint) error
 }
 
@@ -32,7 +33,7 @@ func NewAgentRepository(db *gorm.DB) AgentRepository {
 
 func (r *agentRepository) baseQuery() *gorm.DB {
 	return r.db.
-		Joins("Users").
+		Joins("User").
 		Joins("Agency")
 }
 
@@ -67,6 +68,19 @@ func (r *agentRepository) FindByUserID(userID uint) (*model.Agent, error) {
 	return &agent, err
 }
 
+func (r *agentRepository) FindBySIUP4(userID uint) (*model.Agent, error) {
+	var agent model.Agent
+	err := r.baseQuery().
+		Where("siup4 = ?", userID).
+		First(&agent).Error
+	if err != nil {
+		logger.Log.Info("User ID not found")
+		return nil, err
+	}
+
+	return &agent, err
+}
+
 func (r *agentRepository) FindAll() ([]model.Agent, error) {
 	var agents []model.Agent
 	err := r.baseQuery().
@@ -80,10 +94,11 @@ func (r *agentRepository) FindByTotalPropertiesSold(limit int) ([]model.Agent, e
 		Order("total_properties_sold DESC").
 		Limit(limit).
 		Find(&agents).Error
+
 	return agents, err
 }
 
-func (r *agentRepository) Update(agent model.Agent) error {
+func (r *agentRepository) Update(agent *model.Agent) error {
 	return r.db.Save(agent).Error
 }
 

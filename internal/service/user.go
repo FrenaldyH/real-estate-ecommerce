@@ -74,7 +74,7 @@ func (s *userService) Register(req request.CreateUserRequest) (*response.UserRes
 		Email:       req.Email,
 		PhoneNumber: req.PhoneNumber,
 		Password:    hashed,
-		Role:        model.UserRole(req.Role),
+		Role:        model.RoleUser,
 	}
 
 	if err := s.repo.Create(user); err != nil {

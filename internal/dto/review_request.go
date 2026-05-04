@@ -1,4 +1,4 @@
-package request
+package dto
 
 type CreateReviewRequest struct {
 	Rating  int8    `json:"rating"  binding:"required,min=1,max=5"`

@@ -12,7 +12,13 @@ import (
 
 // Interface
 
-type AgencyService interface{}
+type AgencyService interface {
+	Create(req request.CreateAgenciesRequest) (*response.CreateAgencyResponse, error)
+	FindByID(id uint) (*response.CreateAgencyResponse, error)
+	FindAll() ([]response.CreateAgencyResponse, error)
+	Update(id uint, req request.UpdateAgencyRequest) (*response.CreateAgencyResponse, error)
+	Delete(id uint) error
+}
 
 // Implement
 
@@ -87,13 +93,12 @@ func (s *agencyService) FindAll() ([]response.CreateAgencyResponse, error) {
 	return res, nil
 }
 
-func (s *agencyService) Update(id uint, req request.UpdateAgencyRequest) (*dto.AgencyResponse, error) {
+func (s *agencyService) Update(id uint, req request.UpdateAgencyRequest) (*response.CreateAgencyResponse, error) {
 	agency, err := s.repo.FindByID(id)
 	if err != nil {
 		return nil, errors.New("agency tidak ditemukan")
 	}
 
-	// Update hanya field yang dikirim (pointer → tidak nil berarti dikirim)
 	if req.AgencyName != nil {
 		agency.AgencyName = *req.AgencyName
 	}
@@ -108,7 +113,8 @@ func (s *agencyService) Update(id uint, req request.UpdateAgencyRequest) (*dto.A
 	}
 
 	if err := s.repo.Update(agency); err != nil {
-		return nil, errors.New("gagal mengupdate agency")
+		logger.Log.Info("Failed to update agency", err)
+		return nil, errors.New("Failed to update agency")
 	}
 
 	return toAgencyResponse(agency), nil
@@ -117,7 +123,8 @@ func (s *agencyService) Update(id uint, req request.UpdateAgencyRequest) (*dto.A
 func (s *agencyService) Delete(id uint) error {
 	_, err := s.repo.FindByID(id)
 	if err != nil {
-		return errors.New("agency tidak ditemukan")
+		logger.Log.Info("Agency not found", err)
+		return errors.New("Agency not found")
 	}
 	return s.repo.Delete(id)
 }
