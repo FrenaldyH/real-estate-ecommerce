@@ -71,7 +71,7 @@ func seedUsers(db *gorm.DB) {
 			Email:       "admin@properti.com",
 			PhoneNumber: "081234567894",
 			Password:    hash.MustHashPassword("password123"),
-			Role:        model.RoleAdmin,
+			Role:        model.RoleOwner,
 		},
 	}
 

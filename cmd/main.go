@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/config"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/routes"
 	"github.com/joho/godotenv"
 )
 
@@ -24,5 +27,14 @@ func main() {
 	if os.Getenv("APP_ENV") == "development" {
 		config.RunSeeder(config.DB)
 		logger.Log.Info("Seeder completed")
+	}
+
+	r := routes.SetupRouter(config.DB)
+	server, port := "localhost", ":8080"
+
+	logger.Log.Info(fmt.Sprintf("Starting server on %s%s", server, port))
+	if err := r.Run(server + port); err != nil {
+		logger.Log.Error("Failed to start server: ", err)
+		log.Fatalf("Server error: %v", err)
 	}
 }
