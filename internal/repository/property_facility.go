@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Intterface
+// Interface
 
 type PropertyFacilityRepository interface {
 	Create(pf *model.PropertyFacility) error
@@ -51,6 +51,19 @@ func (r *propertyFacilityRepository) FindByID(id uint) (*model.PropertyFacility,
 	}
 
 	return &pf, err
+}
+
+func (r *propertyFacilityRepository) FindByPropertyID(id uint) ([]model.PropertyFacility, error) {
+	var pfs []model.PropertyFacility
+	err := r.baseQuery().
+		Where("property_id = ?", id).
+		Find(&pfs).Error
+	if err != nil {
+		logger.Log.Info("Property ID not found")
+		return nil, err
+	}
+
+	return pfs, err
 }
 
 func (r *propertyFacilityRepository) FindByPropertyIDAndFacilityTypeID(propertyID uint, facilityTypeID uint) (*model.PropertyFacility, error) {

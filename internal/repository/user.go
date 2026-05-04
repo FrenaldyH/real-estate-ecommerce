@@ -13,6 +13,7 @@ type UserRepository interface {
 	FindByID(id uint) (*model.User, error)
 	FindByNIK(nik string) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
+	FindByUsername(username string) (*model.User, error)
 	FindAll() ([]model.User, error)
 	Update(user *model.User) error
 	Delete(id uint) error

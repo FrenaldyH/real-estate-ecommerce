@@ -11,7 +11,7 @@ import (
 type PropertyImageRepository interface {
 	Create(pi *model.PropertyImage) error
 	FindByID(id uint) (*model.PropertyImage, error)
-	FindByPropertyId(propertyID uint) ([]model.PropertyImage, error)
+	FindByPropertyID(propertyID uint) ([]model.PropertyImage, error)
 	FindByPropertyIDAndPropertyImageID(propertyID uint, propertyImageID uint) (*model.PropertyImage, error)
 	FindAll() ([]model.PropertyImage, error)
 	Update(pi *model.PropertyImage) error
@@ -52,7 +52,7 @@ func (r *propertyImageRepository) FindByID(id uint) (*model.PropertyImage, error
 	return &pi, err
 }
 
-func (r *propertyImageRepository) FindByPropertyId(propertyID uint) ([]model.PropertyImage, error) {
+func (r *propertyImageRepository) FindByPropertyID(propertyID uint) ([]model.PropertyImage, error) {
 	var pis []model.PropertyImage
 	err := r.db.
 		Where("property_id = ?", propertyID).
@@ -65,10 +65,10 @@ func (r *propertyImageRepository) FindByPropertyId(propertyID uint) ([]model.Pro
 	return pis, err
 }
 
-func (r *propertyImageRepository) FindByPropertyIDAndPropertyImageID(propertyID uint, propertyImageID uint) (*model.PropertyImage, error) {
+func (r *propertyImageRepository) FindByPropertyIDAndPropertyImageID(propertyImageID uint, propertyID uint) (*model.PropertyImage, error) {
 	var pi model.PropertyImage
 	err := r.db.
-		Where("id = ? AND property_id = ?", propertyID, propertyImageID).
+		Where("id = ? AND property_id = ?", propertyImageID, propertyID).
 		First(&pi).Error
 	if err != nil {
 		logger.Log.Info("Property ID AND PropertyImage not found")

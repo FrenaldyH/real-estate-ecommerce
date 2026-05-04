@@ -66,5 +66,5 @@ func (r *facilityTypeRepository) Update(ft *model.FacilityType) error {
 }
 
 func (r *facilityTypeRepository) Delete(id uint) error {
-	return r.db.Delete(&model.User{}, id).Error
+	return r.db.Delete(&model.FacilityType{}, id).Error
 }

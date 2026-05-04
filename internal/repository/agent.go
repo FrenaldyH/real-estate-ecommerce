@@ -14,7 +14,8 @@ type AgentRepository interface {
 	FindByUserID(userID uint) (*model.Agent, error)
 	FindAll() ([]model.Agent, error)
 	FindByTotalPropertiesSold(limit int) ([]model.Agent, error)
-	FindBySIUP4(userID uint) (*model.Agent, error)
+	FindByUsername(username string) (*model.Agent, error)
+	FindBySIUP4(siup4 string) (*model.Agent, error)
 	Update(agent *model.Agent) error
 	Delete(id uint) error
 }
@@ -68,13 +69,26 @@ func (r *agentRepository) FindByUserID(userID uint) (*model.Agent, error) {
 	return &agent, err
 }
 
-func (r *agentRepository) FindBySIUP4(userID uint) (*model.Agent, error) {
+func (r *agentRepository) FindByUsername(username string) (*model.Agent, error) {
 	var agent model.Agent
 	err := r.baseQuery().
-		Where("siup4 = ?", userID).
+		Where("username = ?", username).
 		First(&agent).Error
 	if err != nil {
-		logger.Log.Info("User ID not found")
+		logger.Log.Info("Username not found")
+		return nil, err
+	}
+
+	return &agent, err
+}
+
+func (r *agentRepository) FindBySIUP4(siup4 string) (*model.Agent, error) {
+	var agent model.Agent
+	err := r.baseQuery().
+		Where("siup4 = ?", siup4).
+		First(&agent).Error
+	if err != nil {
+		logger.Log.Info("SIUP4 not found")
 		return nil, err
 	}
 

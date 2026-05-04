@@ -73,7 +73,7 @@ func (r *wishlistRepository) FindByUserIDAndPropertyID(userID, propertyID uint) 
 				Where("user_id = ? AND property_id = ?", userID, propertyID).
 				First(&w).Error
 	if err != nil {
-		logger.Log.Info(fmt.Sprintf("User ID %s AND Property ID %s not found", userID, propertyID))
+		logger.Log.Info(fmt.Sprintf("User ID %d AND Property ID %d not found", userID, propertyID))
 		return nil, err
 	}
 

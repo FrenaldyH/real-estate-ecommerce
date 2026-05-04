@@ -74,7 +74,7 @@ func (r *reviewRepository) FindByUserIDAndPropertyID(userID, propertyID uint) (*
 		Where("user_id = ? AND property_id = ?", userID, propertyID).
 		First(&review).Error
 	if err != nil {
-		logger.Log.Info(fmt.Sprint("User with user ID %s AND property ID %s not found", userID, propertyID))
+		logger.Log.Info(fmt.Sprintf("User with user ID %s AND property ID %s not found", userID, propertyID))
 		return nil, err
 	}
 
