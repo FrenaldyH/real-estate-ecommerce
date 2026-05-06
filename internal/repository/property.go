@@ -18,7 +18,7 @@ type PropertyRepository interface {
 	FindByPropertyTypeName(name string) ([]model.Property, error)
 	FindByPriceRange(min, max float64) ([]model.Property, error)
 	FindByListingType(listingType model.ListingType) ([]model.Property, error)
-	Update(p *model.Property) error
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -119,8 +119,10 @@ func (r *propertyRepository) FindByListingType(listingType model.ListingType) ([
 	return ps, err
 }
 
-func (r *propertyRepository) Update(p *model.Property) error {
-	return r.db.Save(p).Error
+func (r *propertyRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *propertyRepository) Delete(id uint) error {

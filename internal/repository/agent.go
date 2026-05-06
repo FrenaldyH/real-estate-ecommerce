@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
@@ -14,9 +16,8 @@ type AgentRepository interface {
 	FindByUserID(userID uint) (*model.Agent, error)
 	FindAll() ([]model.Agent, error)
 	FindByTotalPropertiesSold(limit int) ([]model.Agent, error)
-	FindByUsername(username string) (*model.Agent, error)
 	FindBySIUP4(siup4 string) (*model.Agent, error)
-	Update(agent *model.Agent) error
+	Update(id uint, agentData map[string]any, userData map[string]any) (*model.Agent, error)
 	Delete(id uint) error
 }
 
@@ -58,7 +59,7 @@ func (r *agentRepository) FindByID(id uint) (*model.Agent, error) {
 
 func (r *agentRepository) FindByUserID(userID uint) (*model.Agent, error) {
 	var agent model.Agent
-	err := r.baseQuery().
+	err := r.db.
 		Where("user_id = ?", userID).
 		First(&agent).Error
 	if err != nil {
@@ -69,22 +70,9 @@ func (r *agentRepository) FindByUserID(userID uint) (*model.Agent, error) {
 	return &agent, err
 }
 
-func (r *agentRepository) FindByUsername(username string) (*model.Agent, error) {
-	var agent model.Agent
-	err := r.baseQuery().
-		Where("username = ?", username).
-		First(&agent).Error
-	if err != nil {
-		logger.Log.Info("Username not found")
-		return nil, err
-	}
-
-	return &agent, err
-}
-
 func (r *agentRepository) FindBySIUP4(siup4 string) (*model.Agent, error) {
 	var agent model.Agent
-	err := r.baseQuery().
+	err := r.db.
 		Where("siup4 = ?", siup4).
 		First(&agent).Error
 	if err != nil {
@@ -112,8 +100,49 @@ func (r *agentRepository) FindByTotalPropertiesSold(limit int) ([]model.Agent, e
 	return agents, err
 }
 
-func (r *agentRepository) Update(agent *model.Agent) error {
-	return r.db.Save(agent).Error
+func (r *agentRepository) Update(id uint, agentData map[string]any, userData map[string]any) (*model.Agent, error) {
+	var updatedAgent *model.Agent
+
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		// [CARI DATA AGENT]
+		agent, _ := r.FindByID(id)
+		if agent == nil {
+			return errors.New("Agent not found")
+		}
+
+		// [UPDATE TABEL USER]
+		if len(userData) > 0 {
+			if err := tx.Model(&model.User{}).
+				Where("id = ?", agent.UserID).
+				Updates(userData).Error; err != nil {
+				return errors.New("Failed to update user data")
+			}
+		}
+
+		// [UPDATE TABEL AGENT]
+		if len(agentData) > 0 {
+			if err := tx.Model(&model.Agent{}).
+				Where("id = ?", agent.ID).
+				Updates(agentData).Error; err != nil {
+				return errors.New("Failed to update agent data")
+			}
+		}
+
+		if err := tx.Joins("User").
+			Joins("Agency").
+			Where("agents.id = ?", agent.ID).
+			First(&agent).Error; err != nil {
+			return errors.New("Failed fetch data")
+		}
+
+		updatedAgent = agent
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedAgent, nil
 }
 
 func (r *agentRepository) Delete(id uint) error {

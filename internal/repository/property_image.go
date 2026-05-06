@@ -14,7 +14,7 @@ type PropertyImageRepository interface {
 	FindByPropertyID(propertyID uint) ([]model.PropertyImage, error)
 	FindByPropertyIDAndPropertyImageID(propertyID uint, propertyImageID uint) (*model.PropertyImage, error)
 	FindAll() ([]model.PropertyImage, error)
-	Update(pi *model.PropertyImage) error
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -85,8 +85,10 @@ func (r *propertyImageRepository) FindAll() ([]model.PropertyImage, error) {
 	return pis, err
 }
 
-func (r *propertyImageRepository) Update(pi *model.PropertyImage) error {
-	return r.db.Save(pi).Error
+func (r *propertyImageRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *propertyImageRepository) Delete(id uint) error {

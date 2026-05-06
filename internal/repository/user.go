@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
@@ -15,7 +17,7 @@ type UserRepository interface {
 	FindByEmail(email string) (*model.User, error)
 	FindByUsername(username string) (*model.User, error)
 	FindAll() ([]model.User, error)
-	Update(user *model.User) error
+	Update(id uint, data map[string]any) (*model.User, error)
 	Delete(id uint) error
 }
 
@@ -85,8 +87,23 @@ func (r *userRepository) FindAll() ([]model.User, error) {
 	return users, err
 }
 
-func (r *userRepository) Update(user *model.User) error {
-	return r.db.Save(user).Error
+func (r *userRepository) Update(id uint, data map[string]any) (*model.User, error) {
+	err := r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
+	if err != nil {
+		logger.Log.Info("Failed to update user")
+		return nil, errors.New("Failed to update user")
+	}
+
+	var user model.User
+	err = r.db.First(&user, id).Error
+	if err != nil {
+		logger.Log.Info("Failed ro fetch user data from database")
+		return nil, errors.New("Failed ro fetch user data from database")
+	}
+
+	return &user, nil
 }
 
 func (r *userRepository) Delete(id uint) error {

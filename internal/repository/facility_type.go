@@ -13,7 +13,7 @@ type FacilityTypeRepository interface {
 	FindByName(name string) (*model.FacilityType, error)
 	FindByID(id uint) (*model.FacilityType, error)
 	FindAll() ([]model.FacilityType, error)
-	Update(ft *model.FacilityType) error
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -61,8 +61,10 @@ func (r *facilityTypeRepository) FindAll() ([]model.FacilityType, error) {
 	return fts, err
 }
 
-func (r *facilityTypeRepository) Update(ft *model.FacilityType) error {
-	return r.db.Save(ft).Error
+func (r *facilityTypeRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *facilityTypeRepository) Delete(id uint) error {

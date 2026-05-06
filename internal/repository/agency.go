@@ -14,7 +14,7 @@ type AgencyRepository interface {
 	FindByNIB(nib string) (*model.Agency, error)
 	FindByEmail(email string) (*model.Agency, error)
 	FindAll() ([]model.Agency, error)
-	Update(agency *model.Agency) error
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -70,8 +70,10 @@ func (r *agencyRepository) FindAll() ([]model.Agency, error) {
 	return agencies, err
 }
 
-func (r *agencyRepository) Update(agency *model.Agency) error {
-	return r.db.Save(agency).Error
+func (r *agencyRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *agencyRepository) Delete(id uint) error {

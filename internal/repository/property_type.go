@@ -13,7 +13,7 @@ type PropertyTypeRepository interface {
 	FindByID(id uint) (*model.PropertyType, error)
 	FindByName(name string) (*model.PropertyType, error)
 	FindAll() ([]model.PropertyType, error)
-	Update(pt *model.PropertyType) error
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -62,8 +62,10 @@ func (r *propertyTypeRepository) FindAll() ([]model.PropertyType, error) {
 	return pts, err
 }
 
-func (r *propertyTypeRepository) Update(pt *model.PropertyType) error {
-	return r.db.Save(pt).Error
+func (r *propertyTypeRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *propertyTypeRepository) Delete(id uint) error {

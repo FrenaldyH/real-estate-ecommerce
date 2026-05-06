@@ -13,7 +13,7 @@ type PropertyFacilityRepository interface {
 	FindByID(id uint) (*model.PropertyFacility, error)
 	FindByPropertyIDAndFacilityTypeID(propertyID uint, facilityTypeID uint) (*model.PropertyFacility, error)
 	FindAll() ([]model.PropertyFacility, error)
-	Update(pf *model.PropertyFacility) error
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -86,8 +86,10 @@ func (r *propertyFacilityRepository) FindAll() ([]model.PropertyFacility, error)
 	return pfs, err
 }
 
-func (r *propertyFacilityRepository) Update(pf *model.PropertyFacility) error {
-	return r.db.Save(pf).Error
+func (r *propertyFacilityRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *propertyFacilityRepository) Delete(id uint) error {

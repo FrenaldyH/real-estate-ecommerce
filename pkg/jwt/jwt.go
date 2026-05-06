@@ -11,8 +11,8 @@ import (
 )
 
 type Claims struct {
-	UserID uint   `json:"user_id"`
-	Role   string `json:"role"`
+	Username string `json:"username"`
+	Role     string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -30,7 +30,7 @@ func getSecretKey() []byte {
 	return []byte(secretKey)
 }
 
-func GenerateToken(userID uint, role string) (string, error) {
+func GenerateToken(username string, role string) (string, error) {
 	// [NOTES] time.Minutes ntar  ganti time.Hours
 	duration, _ := strconv.Atoi(os.Getenv("JWT_EXP"))
 	if duration == 0 {
@@ -41,8 +41,8 @@ func GenerateToken(userID uint, role string) (string, error) {
 	expDuration := time.Duration(duration) * time.Minute
 
 	claims := Claims{
-		UserID: userID,
-		Role:   role,
+		Username: username,
+		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expDuration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

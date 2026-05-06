@@ -7,7 +7,6 @@ import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/repository"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/hash"
-	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/jwt"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 )
 
@@ -15,11 +14,10 @@ import (
 
 type UserService interface {
 	CreateUser(req dto.CreateUserRequest) (*dto.UserResponse, error)
-	LoginUser(req dto.LoginRequest) (*dto.LoginResponse, error)
 	GetUser(req dto.GetUserRequest) (*dto.UserResponse, error)
 	GetUsers() ([]dto.UserResponse, error)
 	PutUser(username string, req dto.ModifyUserRequest) (*dto.UserResponse, error)
-	DeleteUser(req dto.DeleteUserRequst) error
+	DeleteUser(username string) error
 }
 
 // Implement
@@ -88,7 +86,7 @@ func (s *userService) CreateUser(req dto.CreateUserRequest) (*dto.UserResponse, 
 	return userModelToUserResponse(user), nil
 }
 
-func (s *userService) LoginUser(req dto.LoginRequest) (*dto.LoginResponse, error) {
+/* func (s *userService) LoginUser(req dto.LoginRequest) (*dto.LoginResponse, error) {
 	// [VALIDASI KEBERADAAN EMAIL]
 	user, _ := s.repo.FindByEmail(req.Email)
 	if user == nil {
@@ -113,7 +111,7 @@ func (s *userService) LoginUser(req dto.LoginRequest) (*dto.LoginResponse, error
 		Token: token,
 		User:  *userModelToUserResponse(user),
 	}, nil
-}
+} */
 
 func (s *userService) GetUser(req dto.GetUserRequest) (*dto.UserResponse, error) {
 	// [CEK USERNAME]
@@ -127,7 +125,6 @@ func (s *userService) GetUser(req dto.GetUserRequest) (*dto.UserResponse, error)
 }
 
 func (s *userService) GetUsers() ([]dto.UserResponse, error) {
-	// [CEK USERNAME]
 	users, _ := s.repo.FindAll()
 	if len(users) == 0 {
 		logger.Log.Info("No user found")
@@ -150,41 +147,25 @@ func (s *userService) PutUser(username string, req dto.ModifyUserRequest) (*dto.
 		return nil, errors.New("Username not found")
 	}
 
-	// [CEK NIK]
-	if req.Email != "" {
-		user.Email = req.Email
+	data := map[string]any{
+		"nik":          req.NIK,
+		"full_name":    req.FullName,
+		"email":        req.Email,
+		"phone_number": req.PhoneNumber,
+		"password":     req.Password,
 	}
 
-	// [CEK FULLNAME]
-	if req.FullName != "" {
-		user.FullName = req.FullName
+	updatedData, err := s.repo.Update(user.ID, data)
+	if err != nil {
+		logger.Log.Info("Failed to updated user")
+		return nil, err
 	}
 
-	// [CEK PASSWORD]
-	if req.Password != "" {
-		user.Password = req.Password
-	}
-
-	// [CEK EMAIL]
-	if req.Email != "" {
-		user.Email = req.Email
-	}
-
-	// [CEK PHONENUMBER]
-	if req.PhoneNumber != "" {
-		user.PhoneNumber = req.PhoneNumber
-	}
-
-	if err := s.repo.Update(user); err != nil {
-		logger.Log.Info("Failed to update user")
-		return nil, errors.New("Failed to update user")
-	}
-
-	return userModelToUserResponse(user), nil
+	return userModelToUserResponse(updatedData), nil
 }
 
-func (s *userService) DeleteUser(req dto.DeleteUserRequst) error {
-	if user, _ := s.repo.FindByUsername(req.Username); user != nil {
+func (s *userService) DeleteUser(username string) error {
+	if user, _ := s.repo.FindByUsername(username); user == nil {
 		logger.Log.Info("Username not found")
 		return errors.New("Username not found")
 	}

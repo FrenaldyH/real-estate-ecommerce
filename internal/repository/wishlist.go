@@ -15,6 +15,7 @@ type WishlistRepository interface {
 	FindByID(id uint) (*model.Wishlist, error)
 	FindByUserID(userID uint) ([]model.Wishlist, error)
 	FindByUserIDAndPropertyID(userID, propertyID uint) (*model.Wishlist, error)
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -78,6 +79,12 @@ func (r *wishlistRepository) FindByUserIDAndPropertyID(userID, propertyID uint) 
 	}
 
 	return &w, err
+}
+
+func (r *wishlistRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *wishlistRepository) Delete(id uint) error {

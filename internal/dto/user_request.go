@@ -10,15 +10,13 @@ type CreateUserRequest struct {
 }
 
 type LoginRequest struct {
-	Email    string `json:"email"    binding:"required,email,max=255"`
+	Username string `json:"username"    binding:"required,max=50"`
 	Password string `json:"password" binding:"required,max=255"`
 }
 
 type GetUserRequest struct {
 	Username string `json:"username" binding:"required,max=50"`
 }
-
-type GetUsersRequest struct{}
 
 type ModifyUserRequest struct {
 	NIK         string `json:"nik" binding:"required,numeric,len=16"`
@@ -29,9 +27,5 @@ type ModifyUserRequest struct {
 }
 
 type RoleUserRequst struct {
-	Username string `json:"username"     binding:"required,min=3,max=50"`
-}
-
-type DeleteUserRequst struct {
 	Username string `json:"username"     binding:"required,min=3,max=50"`
 }

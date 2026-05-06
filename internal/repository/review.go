@@ -15,7 +15,7 @@ type ReviewRepository interface {
 	FindByPropertyID(propertyID uint) ([]model.Review, error)
 	FindByUserID(userID uint) ([]model.Review, error)
 	FindByUserIDAndPropertyID(userID, propertyID uint) (*model.Review, error)
-	Update(r *model.Review) error
+	Update(id uint, data map[string]any) error
 	Delete(id uint) error
 }
 
@@ -81,8 +81,10 @@ func (r *reviewRepository) FindByUserIDAndPropertyID(userID, propertyID uint) (*
 	return &review, err
 }
 
-func (r *reviewRepository) Update(review *model.Review) error {
-	return r.db.Save(review).Error
+func (r *reviewRepository) Update(id uint, data map[string]any) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Updates(data).Error
 }
 
 func (r *reviewRepository) Delete(id uint) error {

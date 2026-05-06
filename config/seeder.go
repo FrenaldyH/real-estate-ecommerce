@@ -173,16 +173,18 @@ func seedAgents(db *gorm.DB) {
 
 	agents := []model.Agent{
 		{
-			UserID:         userAndi.ID,
-			BioDescription: helper.Ptr("Agen properti berpengalaman 5 tahun di Jakarta"),
-			AgencyID:       &agency1.ID,
-			SIUP4:          helper.Ptr("SIUP4-001-JKT-2024"),
+			UserID:              userAndi.ID,
+			BioDescription:      helper.Ptr("Agen properti berpengalaman 5 tahun di Jakarta"),
+			AgencyID:            &agency1.ID,
+			SIUP4:               helper.Ptr("SIUP4-001-JKT-2024"),
+			TotalPropertiesSold: 10,
 		},
 		{
-			UserID:         userDewi.ID,
-			BioDescription: helper.Ptr("Spesialis properti mewah Surabaya dan sekitarnya"),
-			AgencyID:       &agency2.ID,
-			SIUP4:          helper.Ptr("SIUP4-002-SBY-2024"),
+			UserID:              userDewi.ID,
+			BioDescription:      helper.Ptr("Spesialis properti mewah Surabaya dan sekitarnya"),
+			AgencyID:            &agency2.ID,
+			SIUP4:               helper.Ptr("SIUP4-002-SBY-2024"),
+			TotalPropertiesSold: 1,
 		},
 	}
 

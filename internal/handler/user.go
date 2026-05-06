@@ -10,12 +10,14 @@ import (
 
 // Interface
 type UserHandler interface {
-	Register(c *gin.Context)
-	Login(c *gin.Context)
-	GetByUsername(c *gin.Context)
-	Update(c *gin.Context)
-	GetAll(c *gin.Context)
+	RegisterUser(c *gin.Context)
+	GetUserByUsername(c *gin.Context)
+	UpdateUser(c *gin.Context)
+	GetAllUser(c *gin.Context)
+	DeleteUser(c *gin.Context)
 }
+
+// Impelement
 
 type userHandler struct {
 	service service.UserService
@@ -25,7 +27,9 @@ func NewUserHandler(s service.UserService) UserHandler {
 	return &userHandler{service: s}
 }
 
-func (h *userHandler) Register(c *gin.Context) {
+// Method
+
+func (h *userHandler) RegisterUser(c *gin.Context) {
 	var req dto.CreateUserRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -44,26 +48,7 @@ func (h *userHandler) Register(c *gin.Context) {
 	response.Created(c, "Registration successful", res)
 }
 
-func (h *userHandler) Login(c *gin.Context) {
-	var req dto.LoginRequest
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		logger.Log.Info("Bad Request, Bad Format")
-		response.BadRequest(c, err.Error())
-		return
-	}
-
-	res, err := h.service.LoginUser(req)
-	if err != nil {
-		logger.Log.Info("Bad Request, Bad Format")
-		response.BadRequest(c, err.Error())
-		return
-	}
-
-	response.OK(c, "Successfully Login", res)
-}
-
-func (h *userHandler) GetByUsername(c *gin.Context) {
+func (h *userHandler) GetUserByUsername(c *gin.Context) {
 	req := dto.GetUserRequest{
 		Username: c.Param("username"),
 	}
@@ -75,8 +60,8 @@ func (h *userHandler) GetByUsername(c *gin.Context) {
 	response.OK(c, "OK", res)
 }
 
-func (h *userHandler) Update(c *gin.Context) {
-	username := c.Param("username")
+func (h *userHandler) UpdateUser(c *gin.Context) {
+	username := c.MustGet("username").(string)
 	var req dto.ModifyUserRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -94,11 +79,23 @@ func (h *userHandler) Update(c *gin.Context) {
 	response.OK(c, "Update OK", res)
 }
 
-func (h *userHandler) GetAll(c *gin.Context) {
+func (h *userHandler) GetAllUser(c *gin.Context) {
 	res, err := h.service.GetUsers()
 	if err != nil {
+		logger.Log.Info("internal server error")
 		response.InternalError(c, err.Error())
 		return
 	}
 	response.OK(c, "OK", res)
+}
+
+func (h *userHandler) DeleteUser(c *gin.Context) {
+	username := c.MustGet("username").(string)
+	err := h.service.DeleteUser(username)
+	if err != nil {
+		logger.Log.Info("bad request")
+		response.BadRequest(c, err.Error())
+		return
+	}
+	response.OK(c, "OK", nil)
 }
