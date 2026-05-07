@@ -38,7 +38,6 @@ type PropertyListResponse struct {
 	PrimaryImage *PropertyImageResponse `json:"primary_image,omitempty"`
 }
 
-// Response detail
 type PropertyDetailResponse struct {
 	ID              uint                 `json:"id"`
 	Title           string               `json:"title"`
@@ -54,11 +53,20 @@ type PropertyDetailResponse struct {
 	FacingDirection *string              `json:"facing_direction,omitempty"`
 	HasCarAccess    bool                 `json:"has_car_access"`
 	ElectricalPower int                  `json:"electrical_power"`
-	IMB_PBB         bool                 `json:"imb_pbb"`
 
-	// Nested
-	Agent        AgentResponse              `json:"agent"`
-	PropertyType PropertyTypeResponse       `json:"property_type"`
-	Images       []PropertyImageResponse    `json:"images"`
-	Facilities   []PropertyFacilityResponse `json:"facilities"`
+	LandSize     int    `json:"land_size"`
+	BuildingSize int    `json:"building_size"`
+	Floors       int    `json:"floors"`
+	Certificate  string `json:"certificate"`
+	Furnishing   string `json:"furnishing"`
+	YearBuilt    int    `json:"year_built"`
+	IsFeatured   bool   `json:"is_featured"`
+	RentPeriod   string `json:"rent_period,omitempty"`
+
+	ImbPbb bool `json:"imb_pbb"`
+
+	Agent        *AgentResponse             `json:"agent,omitempty"`
+	PropertyType *PropertyTypeResponse      `json:"property_type,omitempty"`
+	Images       []PropertyImageResponse    `json:"images,omitempty"`
+	Facilities   []PropertyFacilityResponse `json:"facilities,omitempty"`
 }

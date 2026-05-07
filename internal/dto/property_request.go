@@ -19,6 +19,15 @@ type CreatePropertyRequest struct {
 	HasCarAccess    bool    `json:"has_car_access"   binding:"omitempty"`
 	ElectricalPower int     `json:"electrical_power" binding:"omitempty,gte=0"`
 
+	LandSize     int     `json:"land_size"        binding:"required,gte=0"`
+	BuildingSize int     `json:"building_size"    binding:"required,gte=0"`
+	Floors       int     `json:"floors"           binding:"required,gte=0"`
+	Certificate  string  `json:"certificate"      binding:"required,max=3"`
+	Furnishing   string  `json:"furnishing"       binding:"required,max=30"`
+	YearBuilt    int     `json:"year_built"       binding:"required,gt=1900"`
+	IsFeatured   bool    `json:"is_featured"      binding:"omitempty"`
+	RentPeriod   *string `json:"rent_period"`
+
 	IMB_PBB bool `json:"imb_pbb" binding:"omitempty"`
 }
 

@@ -195,14 +195,22 @@ func seedAgents(db *gorm.DB) {
 }
 
 // 6. PROPERTIES
-func seedProperties(db *gorm.DB) {
+func seedProperties(db *gorm.DB) error {
 	var userAndi, userDewi model.User
-	db.Where("username = ?", "andi_wijaya").First(&userAndi)
-	db.Where("username = ?", "dewi_kusuma").First(&userDewi)
+	if err := db.Where("username = ?", "andi_wijaya").First(&userAndi).Error; err != nil {
+		return err
+	}
+	if err := db.Where("username = ?", "dewi_kusuma").First(&userDewi).Error; err != nil {
+		return err
+	}
 
 	var agent1, agent2 model.Agent
-	db.Where("user_id = ?", userAndi.ID).First(&agent1)
-	db.Where("user_id = ?", userDewi.ID).First(&agent2)
+	if err := db.Where("user_id = ?", userAndi.ID).First(&agent1).Error; err != nil {
+		return err
+	}
+	if err := db.Where("user_id = ?", userDewi.ID).First(&agent2).Error; err != nil {
+		return err
+	}
 
 	var typeRumah, typeApartemen, typeRuko, typeTanah, typeVilla model.PropertyType
 	db.Where("name = ?", "Rumah").First(&typeRumah)
@@ -228,7 +236,16 @@ func seedProperties(db *gorm.DB) {
 			FacingDirection: helper.Ptr("Timur"),
 			HasCarAccess:    true,
 			ElectricalPower: 2200,
-			IMB_PBB:         true,
+			ImbPbb:          true,
+			// Data Tambahan
+			LandSize:     150,
+			BuildingSize: 200,
+			Floors:       2,
+			Certificate:  "SHM",
+			Furnishing:   "Unfurnished",
+			YearBuilt:    2020,
+			IsFeatured:   true,
+			RentPeriod:   "-", // Menggunakan "-" karena ini dijual, bukan disewa
 		},
 		{
 			AgentID:         agent1.ID,
@@ -246,7 +263,16 @@ func seedProperties(db *gorm.DB) {
 			FacingDirection: helper.Ptr("Barat"),
 			HasCarAccess:    true,
 			ElectricalPower: 1300,
-			IMB_PBB:         true,
+			ImbPbb:          true,
+			// Data Tambahan
+			LandSize:     0, // Biasanya apartemen studio tidak dihitung luas tanah pribadinya
+			BuildingSize: 35,
+			Floors:       1,
+			Certificate:  "HGB",
+			Furnishing:   "Furnished",
+			YearBuilt:    2019,
+			IsFeatured:   true,
+			RentPeriod:   "Monthly",
 		},
 		{
 			AgentID:         agent2.ID,
@@ -263,7 +289,16 @@ func seedProperties(db *gorm.DB) {
 			IsNegotiable:    true,
 			HasCarAccess:    true,
 			ElectricalPower: 5500,
-			IMB_PBB:         true,
+			ImbPbb:          true,
+			// Data Tambahan
+			LandSize:     100,
+			BuildingSize: 250,
+			Floors:       3,
+			Certificate:  "SHM",
+			Furnishing:   "Unfurnished",
+			YearBuilt:    2015,
+			IsFeatured:   false,
+			RentPeriod:   "-",
 		},
 		{
 			AgentID:         agent2.ID,
@@ -280,7 +315,16 @@ func seedProperties(db *gorm.DB) {
 			IsNegotiable:    true,
 			HasCarAccess:    true,
 			ElectricalPower: 0,
-			IMB_PBB:         false,
+			ImbPbb:          false,
+			// Data Tambahan
+			LandSize:     300,
+			BuildingSize: 0,
+			Floors:       0,
+			Certificate:  "SHM",
+			Furnishing:   "Unfurnished",
+			YearBuilt:    0,
+			IsFeatured:   false,
+			RentPeriod:   "-",
 		},
 		{
 			AgentID:         agent1.ID,
@@ -298,14 +342,27 @@ func seedProperties(db *gorm.DB) {
 			FacingDirection: helper.Ptr("Selatan"),
 			HasCarAccess:    false,
 			ElectricalPower: 4400,
-			IMB_PBB:         true,
+			ImbPbb:          true,
+			// Data Tambahan
+			LandSize:     500,
+			BuildingSize: 300,
+			Floors:       2,
+			Certificate:  "SHM",
+			Furnishing:   "Furnished",
+			YearBuilt:    2018,
+			IsFeatured:   true,
+			RentPeriod:   "Yearly",
 		},
 	}
 
 	for _, p := range properties {
-		db.Where("title = ?", p.Title).FirstOrCreate(&p)
+		if err := db.Where("title = ?", p.Title).FirstOrCreate(&p).Error; err != nil {
+			logger.Log.Error("Gagal melakukan seeding property %s: %v", p.Title, err)
+		}
 	}
+
 	logger.Log.Debug("OK Properties seeded")
+	return nil
 }
 
 // 7. PROPERTY IMAGES

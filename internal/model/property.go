@@ -28,7 +28,16 @@ type Property struct {
 	HasCarAccess    bool    `gorm:"not null;default:false"                           json:"has_car_access"`
 	ElectricalPower int     `gorm:"not null;default:0"                               json:"electrical_power"`
 
-	IMB_PBB bool `gorm:"column:imb_pbb;not null;default:false"            json:"imb_pbb"`
+	LandSize     int    `gorm:"not null"                                        json:"land_size"`
+	BuildingSize int    `gorm:"not null"                                        json:"building_size"`
+	Floors       int    `gorm:"not null"                                        json:"floors"`
+	Certificate  string `gorm:"type:char(3);not null"                           json:"certificate"`
+	Furnishing   string `gorm:"type:varchar(30);not null"                       json:"furnishing"`
+	YearBuilt    int    `gorm:"not null"                                        json:"year_built"`
+	IsFeatured   bool   `gorm:"not null;default:false"                          json:"is_featured"`
+	RentPeriod   string `gorm:"type:varchar(10);not null"                       json:"rent_period"`
+
+	ImbPbb bool `gorm:"column:imb_pbb;not null;default:false"            json:"imb_pbb"`
 
 	CreatedAt time.Time      `gorm:"autoCreateTime"                                   json:"created_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index"                                            json:"deleted_at,omitempty"`

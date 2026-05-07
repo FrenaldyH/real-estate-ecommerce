@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"gorm.io/gorm"
@@ -85,6 +87,19 @@ func (r *propertyRepository) FindByProvince(province string) ([]model.Property, 
 	return ps, err
 }
 
+func (r *propertyRepository) FindByImbPbb(ImbPbb string) (*model.Property, error) {
+	var p model.Property
+	err := r.baseQuery().
+		Where("imb_pbb = ?", ImbPbb).
+		Find(&p).Error
+	if err != nil {
+		logger.Log.Info("Property Not Found")
+		return nil, errors.New("Property Not Found")
+	}
+
+	return &p, nil
+}
+
 func (r *propertyRepository) FindByStatus(status model.PropertyStatus) ([]model.Property, error) {
 	var ps []model.Property
 	err := r.baseQuery().
@@ -120,7 +135,7 @@ func (r *propertyRepository) FindByListingType(listingType model.ListingType) ([
 }
 
 func (r *propertyRepository) Update(id uint, data map[string]any) error {
-	return r.db.Model(&model.User{}).
+	return r.db.Model(&model.Property{}).
 		Where("id = ?", id).
 		Updates(data).Error
 }
