@@ -335,7 +335,7 @@ export function KPRDictionary() {
             {/* Terms grouped by letter */}
             <div className="space-y-8">
               {sortedLetters.map((letter) => (
-                <div key={letter} ref={(el) => (termRefs.current[letter] = el)}>
+                <div key={letter} ref={(el) => { termRefs.current[letter] = el; }}>
                   {/* Letter Header */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className={`w-12 h-12 bg-gradient-to-br ${getLetterColor(letter)} rounded-xl flex items-center justify-center shadow-lg`}>

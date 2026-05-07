@@ -4,12 +4,14 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 interface Property {
   id: number;
   image: string;
-  price: string;
+  price: number;
   title: string;
   location: string;
   bedrooms?: number;
   bathrooms?: number;
   area?: number;
+  landSize?: number;
+  buildingSize?: number;
   featured?: boolean;
 }
 
