@@ -40,19 +40,21 @@ export function PropertiesPage() {
 
   // Filter client-side untuk type, search, dan agent
   const filteredProperties = properties.filter((p) => {
-    const matchesType = selectedType === 'semua' || p.type === selectedType;
+    const typeName = p.property_type?.name.toLowerCase() ?? '';
+    const matchesType = selectedType === 'semua' || typeName === selectedType;
     const location = [p.city, p.province, p.address].filter(Boolean).join(' ').toLowerCase();
     const matchesSearch =
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       location.includes(searchQuery.toLowerCase());
-    const agentName = p.agent?.user?.full_name ?? '';
-    const matchesAgent = !agentFilter || agentName === agentFilter;
+    const matchesAgent = !agentFilter; // agent filter not available in list response
     return matchesType && matchesSearch && matchesAgent;
   });
 
   // Hitung jumlah properti per tipe untuk tombol filter
   const typeCounts = PROPERTY_TYPES.reduce<Record<string, number>>((acc, t) => {
-    acc[t] = t === 'semua' ? properties.length : properties.filter((p) => p.type === t).length;
+    acc[t] = t === 'semua'
+      ? properties.length
+      : properties.filter((p) => p.property_type?.name.toLowerCase() === t).length;
     return acc;
   }, {});
 
