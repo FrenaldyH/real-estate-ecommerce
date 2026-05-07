@@ -72,6 +72,10 @@ src/
 - **Data**: Currently uses local mock data in `src/app/data/` — replace with API calls when backend is ready
 - **State**: Local `useState` for UI state, context only for cross-component state (wishlist)
 
+## API Reference
+
+Lihat **[API.md](./API.md)** untuk daftar lengkap semua endpoint backend, status auth, dan mapping ke komponen frontend.
+
 ## Connecting to the Backend
 
 When the API is ready, replace the data files in `src/app/data/` with fetch calls. A good pattern:
