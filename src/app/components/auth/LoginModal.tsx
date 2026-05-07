@@ -1,13 +1,8 @@
-// ============================================================================
-// Login Modal Component
-// User authentication modal
-// ============================================================================
-
 import { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
-import { USER_ROLES } from '../../constants';
+import { useAuth } from '../../context/AuthContext';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -16,35 +11,40 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
-  const [email, setEmail] = useState('');
+  const { login } = useAuth();
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'buyer' | 'owner' | 'agent'>('buyer');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const selectedRole = USER_ROLES.find(r => r.value === role);
-    alert(`Login berhasil dengan email: ${email} (${selectedRole?.label})`);
-    onClose();
-    // Reset form
-    setEmail('');
-    setPassword('');
-    setRole('buyer');
+    setError('');
+    setLoading(true);
+    try {
+      await login(username, password);
+      onClose();
+      setUsername('');
+      setPassword('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login gagal. Coba lagi.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Masuk ke Akun Anda" size="md">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Email */}
         <Input
-          type="email"
-          label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="nama@email.com"
+          type="text"
+          label="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="username Anda"
           required
         />
 
-        {/* Password */}
         <Input
           type="password"
           label="Password"
@@ -54,38 +54,12 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
           required
         />
 
-        {/* Role Selection */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Login sebagai
-          </label>
-          <div className="grid grid-cols-1 gap-3">
-            {USER_ROLES.map((roleOption) => (
-              <label
-                key={roleOption.value}
-                className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                  role === roleOption.value
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="role"
-                  value={roleOption.value}
-                  checked={role === roleOption.value}
-                  onChange={(e) => setRole(e.target.value as typeof role)}
-                  className="w-4 h-4 text-blue-600"
-                />
-                <span className="ml-3 font-medium text-gray-900">
-                  {roleOption.label}
-                </span>
-              </label>
-            ))}
+        {error && (
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            {error}
           </div>
-        </div>
+        )}
 
-        {/* Forgot Password */}
         <div className="text-right">
           <button
             type="button"
@@ -95,12 +69,10 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
           </button>
         </div>
 
-        {/* Submit Button */}
-        <Button type="submit" fullWidth size="lg">
-          Masuk
+        <Button type="submit" fullWidth size="lg" disabled={loading}>
+          {loading ? 'Memproses...' : 'Masuk'}
         </Button>
 
-        {/* Switch to Register */}
         <div className="text-center text-sm text-gray-600">
           Belum punya akun?{' '}
           <button
