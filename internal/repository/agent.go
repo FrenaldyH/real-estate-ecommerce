@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
@@ -17,6 +18,7 @@ type AgentRepository interface {
 	FindAll() ([]model.Agent, error)
 	FindByTotalPropertiesSold(limit int) ([]model.Agent, error)
 	FindBySIUP4(siup4 string) (*model.Agent, error)
+	FindAgentIDByUsername(username string) (uint, error)
 	Update(id uint, agentData map[string]any, userData map[string]any) (*model.Agent, error)
 	Delete(id uint) error
 }
@@ -147,4 +149,19 @@ func (r *agentRepository) Update(id uint, agentData map[string]any, userData map
 
 func (r *agentRepository) Delete(id uint) error {
 	return r.db.Delete(&model.Agent{}, id).Error
+}
+
+func (r *agentRepository) FindAgentIDByUsername(username string) (uint, error) {
+	var agent model.Agent
+
+	err := r.db.
+		Joins("JOIN users ON users.id = agents.user_id").
+		Where("users.username = ?", username).
+		First(&agent).Error
+	if err != nil {
+		logger.Log.Error(fmt.Sprintf("Agent not found for username %s: %v", username, err))
+		return 0, errors.New("agent profile not found")
+	}
+
+	return agent.ID, nil
 }

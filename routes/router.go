@@ -16,12 +16,14 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	userRepo := repository.NewUserRepository(db)
 	agentRepo := repository.NewAgentRepository(db)
 	propertyRepo := repository.NewPropertyRepository(db)
+	imageRepo := repository.NewPropertyImageRepository(db)
+	facilityRepo := repository.NewPropertyFacilityRepository(db)
 
 	// [SERVICE LAYER]
 	userService := service.NewUserService(userRepo)
 	agentService := service.NewAgentService(agentRepo, userRepo)
 	authService := service.NewAuthService(userRepo)
-	propertyService := service.NewPropertyService(propertyRepo)
+	propertyService := service.NewPropertyService(propertyRepo, imageRepo, facilityRepo, agentRepo)
 
 	// [HANDLER LAYER]
 	agentHandler := handler.NewAgentHandler(agentService)
@@ -48,9 +50,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		agent.GET("", agentHandler.GetAllAgent)
 		agent.POST("", middleware.Auth(), agentHandler.RegisterAgent)
 		agent.GET("/top", agentHandler.GetTopAgents)
+		agent.DELETE("", middleware.Auth(), middleware.Agent(), agentHandler.DeleteAgent)
 		agent.GET("/:username", agentHandler.GetAgentByUsername)
 		agent.PUT("/:username", middleware.Auth(), middleware.Agent(), agentHandler.UpdateAgent)
-		agent.DELETE("/:username", agentHandler.DeleteAgent)
 	}
 
 	property := api.Group("/property")
@@ -63,13 +65,19 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		// GET /api/property?listing-type= → filter by listing type
 		// GET /api/property?min=&max=     → filter by price range
 		property.GET("", propertyHandler.GetAll)
-
 		property.GET("/:id", propertyHandler.GetByID)
 		property.GET("/:id/images", propertyHandler.GetImages)
 		property.GET("/:id/facility", propertyHandler.GetFacilities)
 
-		property.DELETE("/:id", middleware.Auth(), propertyHandler.Delete)
+		protectedProperty := property.Group("").Use(middleware.Auth(), middleware.Agent())
+		{
+			protectedProperty.POST("", propertyHandler.PostProperty)
+			protectedProperty.PUT("/:id", propertyHandler.PutProperty)
+			protectedProperty.DELETE("/:id", propertyHandler.DeleteProperty)
 
+			protectedProperty.POST("/:id/image", propertyHandler.PostPropertyImage)
+			protectedProperty.DELETE("/:id/image/:image_id", propertyHandler.DeletePropertyImage)
+		}
 	}
 
 	return r

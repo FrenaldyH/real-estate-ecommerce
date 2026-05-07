@@ -87,7 +87,7 @@ func (r *propertyFacilityRepository) FindAll() ([]model.PropertyFacility, error)
 }
 
 func (r *propertyFacilityRepository) Update(id uint, data map[string]any) error {
-	return r.db.Model(&model.User{}).
+	return r.db.Model(&model.PropertyFacility{}).
 		Where("id = ?", id).
 		Updates(data).Error
 }

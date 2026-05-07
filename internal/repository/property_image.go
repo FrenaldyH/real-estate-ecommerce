@@ -86,7 +86,7 @@ func (r *propertyImageRepository) FindAll() ([]model.PropertyImage, error) {
 }
 
 func (r *propertyImageRepository) Update(id uint, data map[string]any) error {
-	return r.db.Model(&model.User{}).
+	return r.db.Model(&model.PropertyImage{}).
 		Where("id = ?", id).
 		Updates(data).Error
 }

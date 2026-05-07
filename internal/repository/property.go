@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
@@ -112,8 +113,13 @@ func (r *propertyRepository) FindByStatus(status model.PropertyStatus) ([]model.
 func (r *propertyRepository) FindByPropertyTypeName(name string) ([]model.Property, error) {
 	var ps []model.Property
 	err := r.baseQuery().
-		Where("property_types.name = ?", name).
+		Where("\"PropertyType\".name = ?", name).
 		Find(&ps).Error
+
+	if len(ps) == 0 {
+		logger.Log.Info(fmt.Sprintf("No property with type %s found", name))
+		return nil, errors.New(fmt.Sprintf("No property with listing-type %s found", name))
+	}
 
 	return ps, err
 }
@@ -123,6 +129,7 @@ func (r *propertyRepository) FindByPriceRange(min float64, max float64) ([]model
 	err := r.baseQuery().
 		Where("properties.price BETWEEN ? AND ?", min, max).
 		Find(&ps).Error
+
 	return ps, err
 }
 
@@ -131,6 +138,11 @@ func (r *propertyRepository) FindByListingType(listingType model.ListingType) ([
 	err := r.baseQuery().
 		Where("properties.listing_type = ?", listingType).
 		Find(&ps).Error
+
+	if len(ps) == 0 {
+		logger.Log.Info(fmt.Sprintf("No property with listing-type %s found", string(listingType)))
+		return nil, errors.New(fmt.Sprintf("No property with listing-type %s found", string(listingType)))
+	}
 	return ps, err
 }
 

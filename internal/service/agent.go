@@ -60,11 +60,11 @@ func agentModelToAgentResponse(u *model.Agent) *dto.AgentResponse {
 // Method
 
 func (s *agentService) CreateAgent(username string, req dto.CreateAgentRequest) (*dto.AgentResponse, error) {
-	// [CEK USERNAME DUPLIKAT]
-	existUsername, _ := s.userRepo.FindByUsername(username)
-	if existUsername != nil {
-		logger.Log.Info("Username has already exist")
-		return nil, errors.New("Username has already exist")
+	// [CEK USERNAME]
+	user, _ := s.userRepo.FindByUsername(username)
+	if user == nil {
+		logger.Log.Info("Username not found")
+		return nil, errors.New("Username not found")
 	}
 
 	// [CEK SIUP4 DUPLIKAT]
@@ -75,10 +75,11 @@ func (s *agentService) CreateAgent(username string, req dto.CreateAgentRequest) 
 		}
 	}
 
-	user, _ := s.userRepo.FindByUsername(username)
-	if user == nil {
-		logger.Log.Info("User not found")
-		return nil, errors.New("User not found")
+	// [CEK ID]
+	existAgent, _ := s.repo.FindByUserID(user.ID)
+	if existAgent != nil {
+		logger.Log.Info("user has already an agent")
+		return nil, errors.New("user has already an agent")
 	}
 
 	agent := &model.Agent{
@@ -213,5 +214,6 @@ func (s *agentService) DeleteAgent(username string) error {
 		logger.Log.Info("Agent not found")
 		return errors.New("Agent not found")
 	}
-	return nil
+
+	return s.repo.Delete(agent.ID)
 }

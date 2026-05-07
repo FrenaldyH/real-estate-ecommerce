@@ -28,6 +28,7 @@ type PropertyImageResponse struct {
 // Response ringkas
 type PropertyListResponse struct {
 	ID           uint                   `json:"id"`
+	AgentID      uint                   `json:"agent_id"`
 	Title        string                 `json:"title"`
 	Price        float64                `json:"price"`
 	City         string                 `json:"city"`
@@ -40,6 +41,7 @@ type PropertyListResponse struct {
 
 type PropertyDetailResponse struct {
 	ID              uint                 `json:"id"`
+	AgentID         uint                 `json:"agent_id"`
 	Title           string               `json:"title"`
 	Description     string               `json:"description"`
 	Price           float64              `json:"price"`

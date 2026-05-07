@@ -28,7 +28,7 @@ type CreatePropertyRequest struct {
 	IsFeatured   bool    `json:"is_featured"      binding:"omitempty"`
 	RentPeriod   *string `json:"rent_period"`
 
-	IMB_PBB bool `json:"imb_pbb" binding:"omitempty"`
+	ImbPbb bool `json:"imb_pbb" binding:"omitempty"`
 }
 
 type CreatePropertyTypeRequest struct {

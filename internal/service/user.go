@@ -165,9 +165,10 @@ func (s *userService) PutUser(username string, req dto.ModifyUserRequest) (*dto.
 }
 
 func (s *userService) DeleteUser(username string) error {
-	if user, _ := s.repo.FindByUsername(username); user == nil {
+	user, _ := s.repo.FindByUsername(username)
+	if user == nil {
 		logger.Log.Info("Username not found")
 		return errors.New("Username not found")
 	}
-	return nil
+	return s.repo.Delete(user.ID)
 }
