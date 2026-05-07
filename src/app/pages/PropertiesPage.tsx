@@ -29,8 +29,8 @@ export function PropertiesPage() {
     setFetchError('');
 
     const filters: Record<string, string> = {};
-    if (listingType === 'buy') filters['listing-type'] = 'sale';
-    if (listingType === 'rent') filters['listing-type'] = 'rent';
+    if (listingType === 'buy') filters['listing-type'] = 'dijual';
+    if (listingType === 'rent') filters['listing-type'] = 'disewa';
 
     getProperties(filters)
       .then(setProperties)
