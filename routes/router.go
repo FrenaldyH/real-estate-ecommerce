@@ -18,18 +18,21 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	propertyRepo := repository.NewPropertyRepository(db)
 	imageRepo := repository.NewPropertyImageRepository(db)
 	facilityRepo := repository.NewPropertyFacilityRepository(db)
+	wishlistRepo := repository.NewWishlistRepository(db)
 
 	// [SERVICE LAYER]
 	userService := service.NewUserService(userRepo)
 	agentService := service.NewAgentService(agentRepo, userRepo)
 	authService := service.NewAuthService(userRepo)
 	propertyService := service.NewPropertyService(propertyRepo, imageRepo, facilityRepo, agentRepo)
+	wishlistService := service.NewWishlistService(wishlistRepo, userRepo)
 
 	// [HANDLER LAYER]
 	agentHandler := handler.NewAgentHandler(agentService)
 	userHandler := handler.NewUserHandler(userService)
 	authHandler := handler.NewAuthHandler(authService)
 	propertyHandler := handler.NewPropertyHandler(propertyService)
+	wishlistHandler := handler.NewWishlistHandler(wishlistService)
 
 	api := r.Group("/api")
 
@@ -78,6 +81,13 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			protectedProperty.POST("/:id/image", propertyHandler.PostPropertyImage)
 			protectedProperty.DELETE("/:id/image/:image_id", propertyHandler.DeletePropertyImage)
 		}
+	}
+
+	wishlist := api.Group("/wishlist").Use(middleware.Auth())
+	{
+		wishlist.GET("", wishlistHandler.GetUserWishlists)
+		wishlist.POST("", wishlistHandler.CreateUserWishlist)
+		wishlist.DELETE("/:wishlist-id", wishlistHandler.DeleteUserWishlist)
 	}
 
 	return r

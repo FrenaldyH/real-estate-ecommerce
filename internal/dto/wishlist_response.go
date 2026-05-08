@@ -1,11 +1,9 @@
 package dto
 
-import "time"
-
 type WishlistResponse struct {
-	ID        uint      `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
+	ID uint `json:"id"`
 
 	// Nested
-	Property PropertyListResponse `json:"property"`
+	Property PropertyDetailResponse `json:"property"`
+	User     UserResponse           `json:"user"`
 }

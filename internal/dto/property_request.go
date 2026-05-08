@@ -4,6 +4,7 @@ import "github.com/FrenaldyH/real-estate-ecommerce/backend/internal/model"
 
 type CreatePropertyRequest struct {
 	PropertyTypeID uint    `json:"property_type_id" binding:"required"`
+	AgentID        uint    `json:"agent_id" binding:"required"`
 	Title          string  `json:"title"            binding:"required,min=10,max=255"`
 	Description    string  `json:"description"      binding:"required,min=20"`
 	Price          float64 `json:"price"           binding:"required,gt=0"`
