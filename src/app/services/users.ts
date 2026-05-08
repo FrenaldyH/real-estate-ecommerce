@@ -1,6 +1,5 @@
 import { apiFetch } from './config';
 
-// Shape dari response backend untuk user
 export interface ApiUser {
   id: number;
   nik: string;
@@ -12,7 +11,6 @@ export interface ApiUser {
   created_at: string;
 }
 
-// Body untuk POST /api/user (registrasi)
 export interface RegisterRequest {
   nik: string;
   full_name: string;
@@ -22,7 +20,6 @@ export interface RegisterRequest {
   username: string;
 }
 
-// Body untuk PUT /api/user/:username (update profil)
 export interface UpdateUserRequest {
   nik?: string;
   full_name?: string;
@@ -31,6 +28,7 @@ export interface UpdateUserRequest {
   password?: string;
 }
 
+// POST /api/user
 export function register(data: RegisterRequest) {
   return apiFetch<ApiUser>('/api/user', {
     method: 'POST',
@@ -38,14 +36,17 @@ export function register(data: RegisterRequest) {
   });
 }
 
+// GET /api/user
 export function getAllUsers() {
   return apiFetch<ApiUser[]>('/api/user');
 }
 
+// GET /api/user/:username
 export function getUser(username: string) {
   return apiFetch<ApiUser>(`/api/user/${username}`);
 }
 
+// PUT /api/user/:username
 export function updateUser(username: string, data: UpdateUserRequest) {
   return apiFetch<ApiUser>(`/api/user/${username}`, {
     method: 'PUT',
@@ -53,6 +54,14 @@ export function updateUser(username: string, data: UpdateUserRequest) {
   });
 }
 
-export function deleteUser(username: string) {
-  return apiFetch<void>(`/api/user/${username}`, { method: 'DELETE' });
+// DELETE /api/user (hapus akun sendiri, token required)
+export function deleteUser() {
+  return apiFetch<void>('/api/user', { method: 'DELETE' });
+}
+
+// PUT /api/user/role?role-name=agent — switch ke role agent
+export function switchUserRole(roleName: string) {
+  return apiFetch<void>(`/api/user/role?role-name=${encodeURIComponent(roleName)}`, {
+    method: 'PUT',
+  });
 }
