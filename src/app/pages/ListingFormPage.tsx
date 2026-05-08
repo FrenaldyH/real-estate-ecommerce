@@ -1,11 +1,24 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
-import { Home, Upload, MapPin, DollarSign, Bed, Bath, Ruler, FileText, User, Phone, Mail, Image, FileCheck, Zap, Car, Droplet, Compass, Building2 } from 'lucide-react';
+import { Link, useParams, useNavigate } from 'react-router';
+import { Home, Upload, MapPin, DollarSign, Bed, Bath, Ruler, FileText, User, Phone, Mail, Image, FileCheck, Zap, Car, Droplet, Compass, Building2, LogIn } from 'lucide-react';
 import { Footer } from '../components/layout/Footer';
 import { ImageWithFallback } from '../components/common/ImageWithFallback';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { postProperty } from '../services/properties';
+import { LoginModal } from '../components/auth/LoginModal';
+import { RegisterModal } from '../components/auth/RegisterModal';
 
 export function ListingFormPage() {
   const { roleType } = useParams<{ roleType: string }>();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
   const [formData, setFormData] = useState({
     propertyType: '',
     listingType: 'jual',
@@ -66,9 +79,45 @@ export function ListingFormPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Listing properti "${formData.title}" berhasil dibuat sebagai ${getRoleTitle()}!\n\nTim kami akan menghubungi Anda dalam 1x24 jam untuk verifikasi.`);
+    if (!isAuthenticated) {
+      setShowLogin(true);
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        price: Number(formData.price.replace(/\D/g, '')),
+        address: formData.location,
+        listing_type: formData.listingType === 'jual' ? 'dijual' : 'disewa' as 'dijual' | 'disewa',
+        land_size: formData.landSize ? Number(formData.landSize) : undefined,
+        building_size: formData.buildingSize ? Number(formData.buildingSize) : undefined,
+        floors: formData.floors ? Number(formData.floors) : undefined,
+        certificate: formData.certificate || undefined,
+        furnishing: formData.furnishing || undefined,
+        year_built: formData.yearBuilt ? Number(formData.yearBuilt) : undefined,
+        electrical_power: formData.powerCapacity ? Number(formData.powerCapacity) : undefined,
+        is_negotiable: formData.canNegotiate === 'ya',
+        has_car_access: formData.carAccess === 'ya',
+        facing_direction: formData.buildingDirection || undefined,
+        payment_method: formData.paymentMethods.length > 0 ? formData.paymentMethods.join(', ') : undefined,
+        imb_pbb: formData.hasIMBPBB === 'ada' ? true : formData.hasIMBPBB === 'tidak-ada' ? false : undefined,
+        status: 'available',
+      };
+      const created = await postProperty(payload);
+      showToast('Listing properti berhasil dibuat!', 'success');
+      navigate(`/property/${created.id}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal membuat listing. Coba lagi.';
+      setSubmitError(msg);
+      showToast(msg, 'error');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -80,6 +129,17 @@ export function ListingFormPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
+      <LoginModal
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true); }}
+      />
+      <RegisterModal
+        isOpen={showRegister}
+        onClose={() => setShowRegister(false)}
+        onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true); }}
+      />
+
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -1027,6 +1087,22 @@ export function ListingFormPage() {
 
             {/* Submit Button */}
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8 border-2 border-blue-200">
+              {!isAuthenticated && (
+                <div className="mb-6 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                  <LogIn className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                  <p className="text-sm text-amber-700 flex-1">
+                    Anda harus login untuk memasang iklan properti.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowLogin(true)}
+                    className="px-4 py-1.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-[#1d4ed8] transition-colors"
+                  >
+                    Masuk
+                  </button>
+                </div>
+              )}
+
               <div className="flex items-start gap-4 mb-6">
                 <input
                   type="checkbox"
@@ -1039,19 +1115,30 @@ export function ListingFormPage() {
                 </label>
               </div>
 
+              {submitError && (
+                <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+                  {submitError}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white py-5 rounded-xl hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transition-all font-bold text-xl flex items-center justify-center gap-3"
+                disabled={submitting}
+                className="w-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white py-5 rounded-xl hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all font-bold text-xl flex items-center justify-center gap-3"
               >
                 <Upload className="w-6 h-6" />
-                Pasang Iklan Sekarang
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                {submitting ? 'Memproses...' : 'Pasang Iklan Sekarang'}
+                {!submitting && (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                )}
               </button>
 
               <p className="text-center text-sm text-slate-600 mt-4">
-                Tim kami akan menghubungi Anda dalam 1x24 jam untuk verifikasi
+                {isAuthenticated
+                  ? 'Listing Anda akan langsung masuk ke sistem setelah dikirim'
+                  : 'Login terlebih dahulu untuk melanjutkan'}
               </p>
             </div>
 
