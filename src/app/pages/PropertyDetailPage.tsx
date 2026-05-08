@@ -17,10 +17,16 @@ import {
   mapToPropertyCard,
   type ApiProperty,
 } from '../services/properties';
+import { getPropertyReviews, postReview, type ApiReview } from '../services/reviews';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { Star } from 'lucide-react';
 
 export function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [property, setProperty] = useState<ApiProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState('');
@@ -30,6 +36,19 @@ export function PropertyDetailPage() {
   const [showKprAssumptions, setShowKprAssumptions] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+
+  const [reviews, setReviews] = useState<ApiReview[]>([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewContent, setReviewContent] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+
+  useEffect(() => {
+    if (!id) return;
+    getPropertyReviews(id)
+      .then(setReviews)
+      .catch(() => {});
+  }, [id]);
 
   const downPayment = 5;
   const loanTenor = 15;
@@ -525,6 +544,118 @@ export function PropertyDetailPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Reviews */}
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 className="text-xl font-bold text-[#0F172A] mb-6">
+                  Ulasan ({reviews.length})
+                </h2>
+
+                {/* Submit form — authenticated only */}
+                {isAuthenticated ? (
+                  <form
+                    className="mb-8 p-4 bg-slate-50 rounded-xl border border-slate-200"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (!reviewContent.trim() || !id) return;
+                      setReviewSubmitting(true);
+                      setReviewError('');
+                      try {
+                        const newReview = await postReview(id, { content: reviewContent, rating: reviewRating });
+                        setReviews((prev) => [newReview, ...prev]);
+                        setReviewContent('');
+                        setReviewRating(5);
+                        showToast('Ulasan berhasil dikirim', 'success');
+                      } catch (err: unknown) {
+                        const msg = err instanceof Error ? err.message : 'Gagal mengirim ulasan';
+                        setReviewError(msg);
+                        showToast(msg, 'error');
+                      } finally {
+                        setReviewSubmitting(false);
+                      }
+                    }}
+                  >
+                    <h3 className="font-semibold text-[#0F172A] mb-3">Tulis Ulasan</h3>
+
+                    {/* Star rating picker */}
+                    <div className="flex gap-1 mb-3">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          className="focus:outline-none"
+                        >
+                          <Star
+                            className={`w-6 h-6 transition-colors ${star <= reviewRating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+
+                    <textarea
+                      value={reviewContent}
+                      onChange={(e) => setReviewContent(e.target.value)}
+                      placeholder="Bagikan pengalaman Anda tentang properti ini..."
+                      rows={3}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    />
+
+                    {reviewError && (
+                      <p className="text-red-500 text-xs mt-1">{reviewError}</p>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={reviewSubmitting || !reviewContent.trim()}
+                      className="mt-3 px-5 py-2 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-[#1d4ed8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {reviewSubmitting ? 'Mengirim...' : 'Kirim Ulasan'}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+                    <p className="text-sm text-blue-700 flex-1">Login untuk menulis ulasan.</p>
+                    <button
+                      onClick={() => setShowLogin(true)}
+                      className="px-4 py-1.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-[#1d4ed8] transition-colors"
+                    >
+                      Masuk
+                    </button>
+                  </div>
+                )}
+
+                {/* Review list */}
+                {reviews.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-6">Belum ada ulasan untuk properti ini.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="border border-slate-200 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <span className="font-semibold text-[#0F172A] text-sm">
+                              {review.user?.full_name || review.user?.username || 'Pengguna'}
+                            </span>
+                            <span className="text-xs text-gray-500 ml-2">
+                              {new Date(review.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            </span>
+                          </div>
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-4 h-4 ${star <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-700">{review.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
