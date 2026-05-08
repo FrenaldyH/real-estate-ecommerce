@@ -65,7 +65,7 @@ export function PriceEstimation() {
   };
 
   return (
-    <section className="py-20 bg-slate-50">
+    <section id="ai-assistant" className="py-20 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Main Card */}
         <div className="bg-white rounded-3xl shadow-lg p-6 md:p-8">
