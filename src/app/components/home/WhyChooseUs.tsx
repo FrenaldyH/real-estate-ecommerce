@@ -43,12 +43,12 @@ export function WhyChooseUs() {
   ];
 
   const partners = [
-    "Agung Podomoro",
-    "Sinarmas Land",
-    "Ciputra Group",
-    "Lippo Group",
-    "Summarecon",
-    "Alam Sutera"
+    { name: 'Agung Podomoro', src: '/logos/partners/Agung_Podomoro_Land.svg' },
+    { name: 'Sinarmas Land',  src: '/logos/partners/Sinar_Mas_Land.svg' },
+    { name: 'Ciputra Group',  src: '/logos/partners/Ciputra.svg' },
+    { name: 'Lippo Group',    src: '/logos/partners/Logo-lippo.svg' },
+    { name: 'Summarecon',     src: '/logos/partners/Summarecon_Agung.svg' },
+    { name: 'Alam Sutera',    src: '/logos/partners/Logo_alamsutera.jpg' },
   ];
 
   return (
@@ -89,18 +89,30 @@ export function WhyChooseUs() {
                 {partners.map((partner, index) => (
                   <div
                     key={`first-${index}`}
-                    className="flex-shrink-0 w-48 h-28 bg-white rounded-xl border-2 border-slate-200 flex items-center justify-center shadow-sm hover:shadow-lg hover:border-transparent hover:ring-2 hover:ring-[#3B82F6] transition-all p-6 group"
+                    className="flex-shrink-0 w-48 h-28 bg-white rounded-xl border-2 border-slate-200 flex flex-col items-center justify-center shadow-sm hover:shadow-lg hover:border-transparent hover:ring-2 hover:ring-[#3B82F6] transition-all p-4 gap-2 group"
                   >
-                    <span className="text-sm font-bold text-[#0F172A] text-center group-hover:bg-gradient-to-r group-hover:from-[#2563EB] group-hover:to-[#3B82F6] group-hover:bg-clip-text group-hover:text-transparent transition-all">{partner}</span>
+                    <img
+                      src={partner.src}
+                      alt={partner.name}
+                      className="h-8 w-auto object-contain"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                    <span className="text-xs font-bold text-[#0F172A] text-center group-hover:bg-gradient-to-r group-hover:from-[#2563EB] group-hover:to-[#3B82F6] group-hover:bg-clip-text group-hover:text-transparent transition-all">{partner.name}</span>
                   </div>
                 ))}
                 {/* Duplicate set for seamless loop */}
                 {partners.map((partner, index) => (
                   <div
                     key={`second-${index}`}
-                    className="flex-shrink-0 w-48 h-28 bg-white rounded-xl border-2 border-slate-200 flex items-center justify-center shadow-sm hover:shadow-lg hover:border-transparent hover:ring-2 hover:ring-[#3B82F6] transition-all p-6 group"
+                    className="flex-shrink-0 w-48 h-28 bg-white rounded-xl border-2 border-slate-200 flex flex-col items-center justify-center shadow-sm hover:shadow-lg hover:border-transparent hover:ring-2 hover:ring-[#3B82F6] transition-all p-4 gap-2 group"
                   >
-                    <span className="text-sm font-bold text-[#0F172A] text-center group-hover:bg-gradient-to-r group-hover:from-[#2563EB] group-hover:to-[#3B82F6] group-hover:bg-clip-text group-hover:text-transparent transition-all">{partner}</span>
+                    <img
+                      src={partner.src}
+                      alt={partner.name}
+                      className="h-8 w-auto object-contain"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                    <span className="text-xs font-bold text-[#0F172A] text-center group-hover:bg-gradient-to-r group-hover:from-[#2563EB] group-hover:to-[#3B82F6] group-hover:bg-clip-text group-hover:text-transparent transition-all">{partner.name}</span>
                   </div>
                 ))}
               </div>
