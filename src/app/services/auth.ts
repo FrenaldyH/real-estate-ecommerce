@@ -1,20 +1,18 @@
-import { apiFetch } from "./config";
-import type { ApiUser } from "./users";
+import { apiFetch } from './config';
 
 export interface LoginRequest {
   username: string;
   password: string;
 }
 
-// Format response dari POST /api/auth/login (belum didokumentasikan backend, akan disesuaikan ke depannya)
+// POST /api/login hanya mengembalikan token — user harus di-fetch terpisah via GET /api/user/:username
 export interface LoginResponse {
   token: string;
-  user: ApiUser;
 }
 
 export function login(data: LoginRequest) {
-  return apiFetch<LoginResponse>("/api/auth/login", {
-    method: "POST",
+  return apiFetch<LoginResponse>('/api/login', {
+    method: 'POST',
     body: JSON.stringify(data),
   });
 }

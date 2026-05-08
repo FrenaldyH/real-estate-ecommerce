@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import type { ApiUser } from '../services/users';
 import { login as apiLogin } from '../services/auth';
+import { getUser } from '../services/users';
 
 interface AuthContextType {
   user: ApiUser | null;
@@ -22,11 +23,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = async (username: string, password: string) => {
-    const result = await apiLogin({ username, password });
-    localStorage.setItem('rumahku-token', result.token);
-    localStorage.setItem('rumahku-user', JSON.stringify(result.user));
-    setToken(result.token);
-    setUser(result.user);
+    // Step 1: dapatkan token dari POST /api/login
+    const { token: newToken } = await apiLogin({ username, password });
+    localStorage.setItem('rumahku-token', newToken);
+    setToken(newToken);
+
+    // Step 2: fetch data user dari GET /api/user/:username
+    const userData = await getUser(username);
+    localStorage.setItem('rumahku-user', JSON.stringify(userData));
+    setUser(userData);
   };
 
   const logout = () => {
