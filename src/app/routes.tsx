@@ -1,4 +1,13 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, ScrollRestoration, Outlet } from 'react-router';
+
+function RootLayout() {
+  return (
+    <>
+      <ScrollRestoration />
+      <Outlet />
+    </>
+  );
+}
 
 // Direct imports instead of lazy loading to avoid suspense conflicts
 import { HomePage } from './pages/HomePage';
@@ -31,75 +40,26 @@ const NotFound = () => (
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <HomePage />,
-  },
-  {
-    path: '/properties',
-    element: <PropertiesPage />,
-  },
-  {
-    path: '/buy',
-    element: <BuyPropertiesPage />,
-  },
-  {
-    path: '/rent',
-    element: <RentPropertiesPage />,
-  },
-  {
-    path: '/property/:id',
-    element: <PropertyDetailPage />,
-  },
-  {
-    path: '/agents',
-    element: <AgentListPage />,
-  },
-  {
-    path: '/blog',
-    element: <BlogListPage />,
-  },
-  {
-    path: '/blog/:id',
-    element: <BlogArticlePage />,
-  },
-  {
-    path: '/blog/:slug',
-    element: <BlogArticlePage />,
-  },
-  {
-    path: '/kpr',
-    element: <KPRPage />,
-  },
-  {
-    path: '/kpr/simulation',
-    element: <KPRSimulationPage />,
-  },
-  {
-    path: '/list-property',
-    element: <ListingFormPage />,
-  },
-  {
-    path: '/list-property/:roleType',
-    element: <ListingFormPage />,
-  },
-  {
-    path: '/wishlist',
-    element: <WishlistPage />,
-  },
-  {
-    path: '/advertiser',
-    element: <AdvertiserPage />,
-  },
-  {
-    path: '/profile',
-    element: <ProfilePage />,
-  },
-  {
-    path: '/developer/login',
-    element: <DeveloperLoginPage />,
-  },
-  {
-    path: '*',
-    Component: NotFound,
+    element: <RootLayout />,
+    children: [
+      { path: '/', element: <HomePage /> },
+      { path: '/properties', element: <PropertiesPage /> },
+      { path: '/buy', element: <BuyPropertiesPage /> },
+      { path: '/rent', element: <RentPropertiesPage /> },
+      { path: '/property/:id', element: <PropertyDetailPage /> },
+      { path: '/agents', element: <AgentListPage /> },
+      { path: '/blog', element: <BlogListPage /> },
+      { path: '/blog/:id', element: <BlogArticlePage /> },
+      { path: '/blog/:slug', element: <BlogArticlePage /> },
+      { path: '/kpr', element: <KPRPage /> },
+      { path: '/kpr/simulation', element: <KPRSimulationPage /> },
+      { path: '/list-property', element: <ListingFormPage /> },
+      { path: '/list-property/:roleType', element: <ListingFormPage /> },
+      { path: '/wishlist', element: <WishlistPage /> },
+      { path: '/advertiser', element: <AdvertiserPage /> },
+      { path: '/profile', element: <ProfilePage /> },
+      { path: '/developer/login', element: <DeveloperLoginPage /> },
+      { path: '*', Component: NotFound },
+    ],
   },
 ]);
