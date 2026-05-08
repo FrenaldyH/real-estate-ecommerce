@@ -15,6 +15,7 @@ import { ListingFormPage } from './pages/ListingFormPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { AdvertiserPage } from './pages/AdvertiserPage';
 import { DeveloperLoginPage } from './pages/DeveloperLoginPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 const NotFound = () => (
   <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
   {
     path: '/advertiser',
     element: <AdvertiserPage />,
+  },
+  {
+    path: '/profile',
+    element: <ProfilePage />,
   },
   {
     path: '/developer/login',

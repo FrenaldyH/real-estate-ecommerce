@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router';
 import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
 import { NAV_ITEMS, ROUTES, APP_CONFIG } from '../../constants';
 
 interface NavbarProps {
@@ -14,6 +15,7 @@ export function Navbar({ onLoginClick, onRegisterClick }: NavbarProps) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { wishlist } = useWishlist();
+  const { isAuthenticated, user } = useAuth();
 
   const isActive = (href: string) => {
     if (href.includes('?')) {
@@ -76,21 +78,35 @@ export function Navbar({ onLoginClick, onRegisterClick }: NavbarProps) {
 
           {/* Desktop auth buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            {onLoginClick && (
+            {isAuthenticated ? (
               <button
-                onClick={onLoginClick}
-                className="px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                onClick={() => navigate(ROUTES.PROFILE)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors"
               >
-                Masuk
+                <div className="w-8 h-8 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                  {(user?.full_name?.[0] ?? user?.username?.[0] ?? '?').toUpperCase()}
+                </div>
+                <span className="font-medium text-gray-700 text-sm">{user?.full_name || user?.username}</span>
               </button>
-            )}
-            {onRegisterClick && (
-              <button
-                onClick={onRegisterClick}
-                className="px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-              >
-                Daftar
-              </button>
+            ) : (
+              <>
+                {onLoginClick && (
+                  <button
+                    onClick={onLoginClick}
+                    className="px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  >
+                    Masuk
+                  </button>
+                )}
+                {onRegisterClick && (
+                  <button
+                    onClick={onRegisterClick}
+                    className="px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+                  >
+                    Daftar
+                  </button>
+                )}
+              </>
             )}
             <button
               onClick={() => navigate(ROUTES.ADVERTISER)}
@@ -144,21 +160,35 @@ export function Navbar({ onLoginClick, onRegisterClick }: NavbarProps) {
             </button>
 
             <div className="pt-3 space-y-2 border-t border-gray-200">
-              {onLoginClick && (
+              {isAuthenticated ? (
                 <button
-                  onClick={() => { onLoginClick(); closeMenu(); }}
-                  className="w-full py-2 text-gray-700 border border-gray-300 rounded-lg"
+                  onClick={() => { navigate(ROUTES.PROFILE); closeMenu(); }}
+                  className="flex items-center gap-3 w-full py-2 px-1"
                 >
-                  Masuk
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                    {(user?.full_name?.[0] ?? user?.username?.[0] ?? '?').toUpperCase()}
+                  </div>
+                  <span className="font-medium text-gray-700">{user?.full_name || user?.username}</span>
                 </button>
-              )}
-              {onRegisterClick && (
-                <button
-                  onClick={() => { onRegisterClick(); closeMenu(); }}
-                  className="w-full py-2 text-blue-600 border border-blue-600 rounded-lg"
-                >
-                  Daftar
-                </button>
+              ) : (
+                <>
+                  {onLoginClick && (
+                    <button
+                      onClick={() => { onLoginClick(); closeMenu(); }}
+                      className="w-full py-2 text-gray-700 border border-gray-300 rounded-lg"
+                    >
+                      Masuk
+                    </button>
+                  )}
+                  {onRegisterClick && (
+                    <button
+                      onClick={() => { onRegisterClick(); closeMenu(); }}
+                      className="w-full py-2 text-blue-600 border border-blue-600 rounded-lg"
+                    >
+                      Daftar
+                    </button>
+                  )}
+                </>
               )}
               <button
                 onClick={() => { navigate(ROUTES.ADVERTISER); closeMenu(); }}

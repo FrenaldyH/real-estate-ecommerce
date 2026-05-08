@@ -2,6 +2,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import type { ApiUser } from '../services/users';
 import { login as apiLogin } from '../services/auth';
 import { getUser } from '../services/users';
+import { useToast } from './ToastContext';
 
 interface AuthContextType {
   user: ApiUser | null;
@@ -14,6 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { showToast } = useToast();
   const [token, setToken] = useState<string | null>(() =>
     localStorage.getItem('rumahku-token')
   );
@@ -23,15 +25,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = async (username: string, password: string) => {
-    // Step 1: dapatkan token dari POST /api/login
     const { token: newToken } = await apiLogin({ username, password });
     localStorage.setItem('rumahku-token', newToken);
     setToken(newToken);
-
-    // Step 2: fetch data user dari GET /api/user/:username
     const userData = await getUser(username);
     localStorage.setItem('rumahku-user', JSON.stringify(userData));
     setUser(userData);
+    showToast(`Selamat datang, ${userData.full_name || userData.username}!`, 'success');
   };
 
   const logout = () => {
@@ -39,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('rumahku-user');
     setToken(null);
     setUser(null);
+    showToast('Berhasil keluar', 'info');
   };
 
   return (

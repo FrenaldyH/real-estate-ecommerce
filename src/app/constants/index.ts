@@ -41,6 +41,7 @@ export const ROUTES = {
   KPR_DICTIONARY: '/kpr/dictionary',
   WISHLIST: '/wishlist',
   ADVERTISER: '/advertiser',
+  PROFILE: '/profile',
   DEVELOPER_LOGIN: '/developer/login',
 } as const;
 
