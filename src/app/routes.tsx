@@ -1,10 +1,12 @@
 import { createBrowserRouter, ScrollRestoration, Outlet } from 'react-router';
+import { AIChatWidget } from './components/common/AIChatWidget';
 
 function RootLayout() {
   return (
     <>
       <ScrollRestoration />
       <Outlet />
+      <AIChatWidget />
     </>
   );
 }
