@@ -87,43 +87,44 @@ export function getPropertyFacilities(id: string | number) {
   return apiFetch<ApiPropertyFacility[]>(`/api/property/${id}/facility`);
 }
 
-export function deleteProperty(id: string | number) {
-  return apiFetch<void>(`/api/property/${id}`, { method: 'DELETE' });
-}
-
-// Agent property actions (butuh token)
-export function agentPostProperty(data: Partial<ApiProperty>) {
-  return apiFetch<ApiProperty>('/api/agent/property', {
+// POST /api/property (auth required)
+export function postProperty(data: Partial<ApiProperty>) {
+  return apiFetch<ApiProperty>('/api/property', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export function agentUpdateProperty(id: string | number, data: Partial<ApiProperty>) {
-  return apiFetch<ApiProperty>(`/api/agent/property/${id}`, {
+// PUT /api/property/:id (auth required)
+export function updateProperty(id: string | number, data: Partial<ApiProperty>) {
+  return apiFetch<ApiProperty>(`/api/property/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
 }
 
-export function agentDeleteProperty(id: string | number) {
-  return apiFetch<void>(`/api/agent/property/${id}`, { method: 'DELETE' });
+// DELETE /api/property/:id (auth required)
+export function deleteProperty(id: string | number) {
+  return apiFetch<void>(`/api/property/${id}`, { method: 'DELETE' });
 }
 
-export function agentUploadPropertyImage(propertyId: string | number, formData: FormData, isPrimary = false) {
+// POST /api/property/:id/image?prime=true|false (auth required, multipart/form-data)
+export async function uploadPropertyImage(propertyId: string | number, formData: FormData, isPrimary = false) {
   const token = localStorage.getItem('rumahku-token');
-  return fetch(
-    `${import.meta.env.VITE_API_URL ?? 'http://localhost:8080'}/api/agent/property/${propertyId}/image?prime=${isPrimary}`,
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL ?? 'http://localhost:8080'}/api/property/${propertyId}/image?prime=${isPrimary}`,
     {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
     }
-  ).then(r => r.json());
+  );
+  return res.json();
 }
 
-export function agentDeletePropertyImage(propertyId: string | number, imageId: string | number) {
-  return apiFetch<void>(`/api/agent/property/${propertyId}/image/${imageId}`, { method: 'DELETE' });
+// DELETE /api/property/:propertyId/image/:imageId (auth required)
+export function deletePropertyImage(propertyId: string | number, imageId: string | number) {
+  return apiFetch<void>(`/api/property/${propertyId}/image/${imageId}`, { method: 'DELETE' });
 }
 
 // Helper: ambil jumlah fasilitas berdasarkan nama (case-insensitive)
