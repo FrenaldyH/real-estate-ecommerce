@@ -8,16 +8,22 @@ import { RegisterModal } from '../components/auth/RegisterModal';
 import { PropertyCard } from '../components/PropertyCard';
 import { ImageWithFallback } from '../components/common/ImageWithFallback';
 import { KPRDictionary } from '../components/KPRDictionary';
-import { allProperties } from '../data/properties';
 import { getKPRArticles } from '../data/blogArticles';
+import { getProperties, mapToPropertyCard } from '../services/properties';
 
 export function KPRPage() {
   const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
-  // Get KPR-related articles
   const kprArticles = getKPRArticles().slice(0, 3);
+  const [kprProperties, setKprProperties] = useState<ReturnType<typeof mapToPropertyCard>[]>([]);
+
+  useEffect(() => {
+    getProperties({ 'listing-type': 'dijual', status: 'available' })
+      .then((data) => setKprProperties(data.slice(0, 3).map(mapToPropertyCard)))
+      .catch(() => {});
+  }, []);
 
   // KPR Calculator State
   const [propertyPrice, setPropertyPrice] = useState(500000000);
@@ -527,12 +533,13 @@ export function KPRPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allProperties
-              .filter((property) => property.priceType === "sale")
-              .slice(0, 3)
-              .map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
+            {kprProperties.length > 0
+              ? kprProperties.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))
+              : Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="bg-slate-100 rounded-2xl h-72 animate-pulse" />
+                ))}
           </div>
 
           <div className="mt-8 text-center md:hidden">
