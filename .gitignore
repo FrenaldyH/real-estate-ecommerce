@@ -1,0 +1,10 @@
+# env file
+.env
+.env.*
+
+# log files
+logs/*.log
+
+# migrations file
+internal/migrations
+

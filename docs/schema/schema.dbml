@@ -1,0 +1,168 @@
+Table users {
+  id                int              [primary key]
+
+  NIK               char(16)          [not null, unique]
+  username          varchar(50)       [not null, unique]
+  full_name         varchar(100)      [not null]
+  email             varchar(255)      [not null, unique]
+  phone_number      varchar(20)       [not null]
+  password          varchar(255)      [not null]
+  role              varchar(10)       [default: 'user']
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table agencies {
+  id                int              [primary key]
+
+  agency_name       varchar(100)      [not null, unique]
+  address           varchar(255)      [not null]
+  phone_number      varchar(20)       [not null]
+  email             varchar(255)      [not null, unique]
+  NIB               varchar(255)      [not null, unique]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table agents {
+  id                int               [primary key]
+  user_id           int               [not null, unique]
+
+  siup4             varchar(50)       [not null, unique]                  
+  bio_description   text              [default: null]
+  agencies_id       int               [default: null]
+  total_properties_sold INT           [default: 0]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table property_types {
+  id int [primary key]
+  name int [not null]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table properties {
+  id                int               [primary key]
+  agent_id          int               [not null] 
+  property_type_id  int               [not null]
+
+  title             varchar(255)      [not null]
+  description       text              [not null]
+
+  price             decimal(17, 2)    [not null]
+  address           varchar(255)      [not null]
+  city              varchar(100)      [not null] 
+  province          varchar(100)      [not null]  
+
+  listing_type      varchar(20)       [not null] 
+  status            varchar(20)       [default: 'available'] 
+  payment_method    varchar(20)       [not null]  
+  is_negotiable     boolean           [default: false]
+
+  facing_direction  varchar(20)       [default: null]
+  has_car_access    boolean           [default: false]
+  electrical_power  int               [default: 0]
+
+  NOP_PBB            char(18)          [not null, unique]
+  IMB_PBB           boolean           [default: false]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table facility_types {
+  id                int               [primary key]
+  name              varchar(50)       [not null, unique]
+
+  created_at         timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+Table property_facilities {
+  id                int               [primary key]
+  property_id       int               [not null]
+  facility_type_id  int               [not null]
+  amount            int               [default: 1]
+
+  created_at         timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+
+  indexes {
+    (property_id, facility_type_id)   [unique]  
+  }
+
+}
+
+// Case: Feature
+Table property_images {
+  id                int               [primary key]
+  property_id       int               [not null]
+
+  image_url         varchar(255)      [not null]
+  is_primary        boolean           [default: false] 
+  sort_order        int               [default: 0] 
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+}
+
+// Case: Feature
+Table wishlists {
+  id                int               [primary key]
+  user_id           int               [not null]
+  property_id       int               [not null]
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+
+  indexes {
+    (user_id, property_id)            [unique]  
+  }
+}
+
+// Case: Feature
+Table reviews {
+  id                int               [primary key]
+  user_id           int               [not null]
+  property_id       int               [not null] 
+
+  rating            tinyint           [not null]
+  comment           text              
+
+  created_at        timestamp         [default: `now()`]
+  deleted_at        timestamp         [default: null]
+
+  indexes {
+    (user_id, property_id)            [unique]  
+  }
+}
+
+Ref: users.id - agents.user_id
+
+Ref: agencies.id < agents.agencies_id
+
+Ref: properties.id < property_images.property_id
+
+Ref: facility_types.id < property_facilities.facility_type_id
+
+Ref: property_facilities.property_id > properties.id
+
+Ref: users.id < reviews.user_id
+
+Ref: users.id < wishlists.user_id
+
+Ref: properties.id < reviews.property_id
+
+Ref: properties.id < wishlists.property_id
+
+Ref: properties.agent_id > agents.id
+
+Ref: property_types.id < properties.property_type_id
+
+

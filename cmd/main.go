@@ -1,0 +1,44 @@
+package main
+
+import (
+	"log"
+	"os"
+
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/config"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/routes"
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	logger.Init()
+	logger.Log.Info("Starting application...")
+
+	if err := godotenv.Load(); err != nil {
+		logger.Log.Warn("No .env file found")
+	} else {
+		logger.Log.Debug("Environment variables loaded")
+	}
+
+	config.InitDB()
+	logger.Log.Info("Database Initialized")
+
+	if os.Getenv("APP_ENV") == "development" {
+		config.RunSeeder(config.DB)
+		logger.Log.Info("Seeder completed")
+	}
+
+	r := routes.SetupRouter(config.DB)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := "0.0.0.0:" + port
+
+	logger.Log.Info("Starting server", "addr", addr)
+	if err := r.Run(addr); err != nil {
+		logger.Log.Error("Failed to start server", "error", err.Error())
+		log.Fatalf("Server error: %v", err)
+	}
+}
