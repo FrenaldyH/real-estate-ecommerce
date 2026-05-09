@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -30,11 +29,16 @@ func main() {
 	}
 
 	r := routes.SetupRouter(config.DB)
-	server, port := "localhost", ":8080"
 
-	logger.Log.Info(fmt.Sprintf("Starting server on %s%s", server, port))
-	if err := r.Run(server + port); err != nil {
-		logger.Log.Error("Failed to start server: ", err)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := "0.0.0.0:" + port
+
+	logger.Log.Info("Starting server", "addr", addr)
+	if err := r.Run(addr); err != nil {
+		logger.Log.Error("Failed to start server", "error", err.Error())
 		log.Fatalf("Server error: %v", err)
 	}
 }

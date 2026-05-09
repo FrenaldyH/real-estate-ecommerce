@@ -1,18 +1,27 @@
 package routes
 
 import (
+	"context"
+	"os"
 	"time"
 
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/handler"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/middleware"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/repository"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/service"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/gemini"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
+	geminiClient, err := gemini.NewClient(os.Getenv("GEMINI_API_KEY"))
+	if err != nil {
+		panic("failed to init gemini client: " + err.Error())
+	}
+
 	r := gin.Default()
 
 	// [CORS]
@@ -33,6 +42,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	facilityRepo := repository.NewPropertyFacilityRepository(db)
 	wishlistRepo := repository.NewWishlistRepository(db)
 	reviewRepo := repository.NewReviewRepository(db)
+	knowledgeRepo := repository.NewKnowledgeRepository(db)
 
 	// [SERVICE LAYER]
 	userService := service.NewUserService(userRepo)
@@ -41,6 +51,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	propertyService := service.NewPropertyService(propertyRepo, imageRepo, facilityRepo, agentRepo)
 	wishlistService := service.NewWishlistService(wishlistRepo, userRepo)
 	reviewService := service.NewReviewService(reviewRepo, userRepo)
+	knowledgeService := service.NewAIService(geminiClient, knowledgeRepo, propertyRepo)
 
 	// [HANDLER LAYER]
 	agentHandler := handler.NewAgentHandler(agentService)
@@ -49,8 +60,29 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	propertyHandler := handler.NewPropertyHandler(propertyService)
 	wishlistHandler := handler.NewWishlistHandler(wishlistService)
 	reviewHandler := handler.NewReviewHandler(reviewService)
+	knowledgeHandler := handler.NewAIHandler(knowledgeService)
+
+	go func() {
+		ctx := context.Background()
+		if err := knowledgeService.IndexBusinessContext(ctx); err != nil {
+			logger.Log.Error("business context indexing failed", "error", err.Error())
+		}
+		if err := knowledgeService.IndexFAQ(ctx); err != nil {
+			logger.Log.Error("FAQ indexing failed", "error", err.Error())
+		}
+		if err := knowledgeService.IndexProperties(ctx); err != nil {
+			logger.Log.Error("property indexing failed", "error", err.Error())
+		}
+	}()
 
 	api := r.Group("/api")
+
+	// AI
+	ai := api.Group("/ai")
+	{
+		ai.POST("/chat", knowledgeHandler.Chat)
+		ai.POST("/reindex", middleware.Auth(), knowledgeHandler.ReIndex)
+	}
 
 	// [PUBLIK]
 	api.POST("/login", authHandler.Login)
