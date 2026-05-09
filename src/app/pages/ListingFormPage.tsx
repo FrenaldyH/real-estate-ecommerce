@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router';
-import { Home, Upload, MapPin, DollarSign, Bed, Bath, Ruler, FileText, User, Phone, Mail, Image, FileCheck, Zap, Car, Droplet, Compass, Building2, LogIn } from 'lucide-react';
+import { Home, Upload, MapPin, DollarSign, Bed, Bath, Ruler, FileText, User, Phone, Mail, Image, FileCheck, Zap, Car, Droplet, Compass, Building2, LogIn, X } from 'lucide-react';
 import { Footer } from '../components/layout/Footer';
 import { ImageWithFallback } from '../components/common/ImageWithFallback';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { postProperty } from '../services/properties';
+import { postProperty, uploadPropertyImage } from '../services/properties';
 import { LoginModal } from '../components/auth/LoginModal';
 import { RegisterModal } from '../components/auth/RegisterModal';
 
@@ -18,6 +18,23 @@ export function ListingFormPage() {
   const [showRegister, setShowRegister] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    const combined = [...selectedFiles, ...files].slice(0, 10);
+    setSelectedFiles(combined);
+    setPreviewUrls(combined.map(f => URL.createObjectURL(f)));
+  };
+
+  const removeFile = (index: number) => {
+    const next = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(next);
+    setPreviewUrls(next.map(f => URL.createObjectURL(f)));
+  };
 
   const [formData, setFormData] = useState({
     propertyType: '',
@@ -123,6 +140,13 @@ export function ListingFormPage() {
         imb_pbb: formData.hasIMBPBB === 'ada',
       };
       const created = await postProperty(payload);
+      if (selectedFiles.length > 0) {
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const fd = new FormData();
+          fd.append('image', selectedFiles[i]);
+          await uploadPropertyImage(created.id, fd, i === 0).catch(() => {});
+        }
+      }
       showToast('Listing properti berhasil dibuat!', 'success');
       navigate(`/property/${created.id}`);
     } catch (err: unknown) {
@@ -574,25 +598,72 @@ export function ListingFormPage() {
                 <div className="w-12 h-12 bg-gradient-to-br from-[#10B981] to-[#059669] rounded-xl flex items-center justify-center">
                   <Image className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#0F172A]">Foto Properti</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-[#0F172A]">Foto Properti</h2>
+                  <p className="text-sm text-slate-500">{selectedFiles.length} foto dipilih (maks. 10)</p>
+                </div>
               </div>
 
-              <div className="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-[#2563EB] hover:bg-blue-50 transition-all cursor-pointer">
-                <Upload className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <p className="text-lg font-semibold text-slate-700 mb-2">
-                  Upload Foto Properti
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center hover:border-[#2563EB] hover:bg-blue-50 transition-all cursor-pointer"
+              >
+                <Upload className="w-14 h-14 text-slate-400 mx-auto mb-3" />
+                <p className="text-lg font-semibold text-slate-700 mb-1">
+                  Klik untuk Upload Foto
                 </p>
-                <p className="text-sm text-slate-500 mb-4">
-                  Klik atau drag & drop foto Anda di sini
-                </p>
-                <p className="text-xs text-slate-400">
-                  Format: JPG, PNG (Max. 5MB per foto) • Min. 5 foto
+                <p className="text-sm text-slate-500">
+                  Format: JPG, PNG (Maks. 5MB per foto)
                 </p>
               </div>
+
+              {previewUrls.length > 0 && (
+                <div className="mt-5 grid grid-cols-3 sm:grid-cols-5 gap-3">
+                  {previewUrls.map((url, i) => (
+                    <div key={i} className="relative group">
+                      <img
+                        src={url}
+                        alt={`foto-${i + 1}`}
+                        className="w-full h-24 object-cover rounded-xl border border-slate-200"
+                      />
+                      {i === 0 && (
+                        <span className="absolute top-1 left-1 bg-[#2563EB] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                          Utama
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {selectedFiles.length < 10 && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-24 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center hover:border-[#2563EB] hover:bg-blue-50 transition-all"
+                    >
+                      <Upload className="w-6 h-6 text-slate-400" />
+                    </button>
+                  )}
+                </div>
+              )}
 
               <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <p className="text-sm text-[#2563EB] font-medium">
-                  💡 Tips: Upload foto dengan pencahayaan yang baik untuk menarik lebih banyak pembeli
+                  Foto pertama akan menjadi foto utama properti. Upload min. 5 foto untuk hasil terbaik.
                 </p>
               </div>
             </div>
