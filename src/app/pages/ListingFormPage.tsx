@@ -25,17 +25,20 @@ export function ListingFormPage() {
     title: '',
     price: '',
     location: '',
+    city: '',
+    province: '',
     bedrooms: '',
     bathrooms: '',
     landSize: '',
     buildingSize: '',
+    floors: '',
+    yearBuilt: '',
     description: '',
     name: '',
     phone: '',
     email: '',
     certificate: '',
     furnishing: '',
-    floors: '',
     // Data Pelengkap untuk Agent
     canNegotiate: 'ya',
     negotiationLimit: '',
@@ -54,7 +57,6 @@ export function ListingFormPage() {
     waterSource: '',
     buildingDirection: '',
     surroundings: '',
-    yearBuilt: ''
   });
 
   const getRoleTitle = () => {
@@ -88,25 +90,37 @@ export function ListingFormPage() {
     setSubmitting(true);
     setSubmitError('');
     try {
+      const PROPERTY_TYPE_IDS: Record<string, number> = {
+        rumah: 1, apartemen: 2, ruko: 3, tanah: 4, villa: 5,
+      };
+      const mapPaymentMethod = (methods: string[]): 'cash' | 'kpr' | 'cash_bertahap' | 'all' => {
+        if (methods.length === 0) return 'cash';
+        if (methods.length >= 2) return 'all';
+        if (methods[0] === 'KPR') return 'kpr';
+        if (methods[0] === 'Cash Bertahap') return 'cash_bertahap';
+        return 'cash';
+      };
       const payload = {
+        property_type_id: PROPERTY_TYPE_IDS[formData.propertyType] ?? 1,
         title: formData.title,
         description: formData.description,
         price: Number(formData.price.replace(/\D/g, '')),
         address: formData.location,
-        listing_type: formData.listingType === 'jual' ? 'dijual' : 'disewa' as 'dijual' | 'disewa',
-        land_size: formData.landSize ? Number(formData.landSize) : undefined,
-        building_size: formData.buildingSize ? Number(formData.buildingSize) : undefined,
-        floors: formData.floors ? Number(formData.floors) : undefined,
-        certificate: formData.certificate || undefined,
-        furnishing: formData.furnishing || undefined,
-        year_built: formData.yearBuilt ? Number(formData.yearBuilt) : undefined,
-        electrical_power: formData.powerCapacity ? Number(formData.powerCapacity) : undefined,
+        city: formData.city,
+        province: formData.province,
+        listing_type: (formData.listingType === 'jual' ? 'dijual' : 'disewa') as 'dijual' | 'disewa',
+        payment_method: mapPaymentMethod(formData.paymentMethods),
+        land_size: formData.landSize ? Number(formData.landSize) : 0,
+        building_size: formData.buildingSize ? Number(formData.buildingSize) : 0,
+        floors: formData.floors ? Number(formData.floors) : 0,
+        certificate: formData.certificate || 'SHM',
+        furnishing: formData.furnishing || 'Unfurnished',
+        year_built: formData.yearBuilt ? Number(formData.yearBuilt) : 2000,
+        electrical_power: formData.powerCapacity ? Number(formData.powerCapacity) : 0,
         is_negotiable: formData.canNegotiate === 'ya',
         has_car_access: formData.carAccess === 'ya',
         facing_direction: formData.buildingDirection || undefined,
-        payment_method: formData.paymentMethods.length > 0 ? formData.paymentMethods.join(', ') : undefined,
-        imb_pbb: formData.hasIMBPBB === 'ada' ? true : formData.hasIMBPBB === 'tidak-ada' ? false : undefined,
-        status: 'available',
+        imb_pbb: formData.hasIMBPBB === 'ada',
       };
       const created = await postProperty(payload);
       showToast('Listing properti berhasil dibuat!', 'success');
@@ -284,8 +298,6 @@ export function ListingFormPage() {
                     <option value="villa">Villa</option>
                     <option value="tanah">Tanah</option>
                     <option value="ruko">Ruko</option>
-                    <option value="gedung">Gedung</option>
-                    <option value="warehouse">Gudang</option>
                   </select>
                 </div>
 
@@ -359,7 +371,7 @@ export function ListingFormPage() {
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     <MapPin className="w-4 h-4 inline mr-1" />
-                    Lokasi *
+                    Alamat Lengkap *
                   </label>
                   <input
                     type="text"
@@ -367,8 +379,42 @@ export function ListingFormPage() {
                     value={formData.location}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent text-slate-900"
-                    placeholder="Jakarta Selatan"
+                    placeholder="Jl. Pahlawan No. 12, BSD City"
                     required
+                    minLength={10}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Kota *
+                  </label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent text-slate-900"
+                    placeholder="Tangerang"
+                    required
+                    minLength={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Provinsi *
+                  </label>
+                  <input
+                    type="text"
+                    name="province"
+                    value={formData.province}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent text-slate-900"
+                    placeholder="Banten"
+                    required
+                    minLength={3}
                   />
                 </div>
               </div>
@@ -447,11 +493,11 @@ export function ListingFormPage() {
                     className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent text-slate-900"
                   >
                     <option value="">Pilih Sertifikat</option>
-                    <option value="shm">SHM - Sertifikat Hak Milik</option>
-                    <option value="shgb">SHGB - Sertifikat Hak Guna Bangunan</option>
-                    <option value="hgb">HGB - Hak Guna Bangunan</option>
-                    <option value="girik">Girik</option>
-                    <option value="ppjb">PPJB</option>
+                    <option value="SHM">SHM - Sertifikat Hak Milik</option>
+                    <option value="HGB">HGB - Hak Guna Bangunan</option>
+                    <option value="SHP">SHP - Sertifikat Hak Pakai</option>
+                    <option value="GRK">Girik</option>
+                    <option value="PPJ">PPJB</option>
                   </select>
                 </div>
 
@@ -466,10 +512,42 @@ export function ListingFormPage() {
                     className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent text-slate-900"
                   >
                     <option value="">Pilih Kondisi</option>
-                    <option value="unfurnished">Unfurnished</option>
-                    <option value="semi-furnished">Semi Furnished</option>
-                    <option value="furnished">Fully Furnished</option>
+                    <option value="Unfurnished">Unfurnished</option>
+                    <option value="Semi Furnished">Semi Furnished</option>
+                    <option value="Furnished">Fully Furnished</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Jumlah Lantai *
+                  </label>
+                  <input
+                    type="number"
+                    name="floors"
+                    value={formData.floors}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent text-slate-900"
+                    placeholder="2"
+                    min={0}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Tahun Dibangun *
+                  </label>
+                  <input
+                    type="number"
+                    name="yearBuilt"
+                    value={formData.yearBuilt}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent text-slate-900"
+                    placeholder="2020"
+                    min={1901}
+                    max={new Date().getFullYear()}
+                  />
                 </div>
               </div>
 
@@ -1007,20 +1085,6 @@ export function ListingFormPage() {
                     </select>
                   </div>
 
-                  {/* Tahun Selesai Dibangun */}
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Tahun Selesai Dibangun
-                    </label>
-                    <input
-                      type="text"
-                      name="yearBuilt"
-                      value={formData.yearBuilt}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-slate-900"
-                      placeholder="Masukkan tahun selesai dibangun"
-                    />
-                  </div>
                 </div>
               </div>
             )}
