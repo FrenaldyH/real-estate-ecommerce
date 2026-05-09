@@ -11,142 +11,142 @@ const bankPrograms = [
   // Konvensional Banks
   {
     id: 1,
-    type: 'konvensional',
-    bankName: 'BCA',
-    programName: 'KPR BCA Fixed Rate',
-    logo: '🏦',
-    interestType: 'Berjenjang',
+    type: "konvensional",
+    bankName: "BCA",
+    programName: "KPR BCA Fixed Rate",
+    logo: "/logos/banks/BCA.svg",
+    interestType: "Berjenjang",
     startingRate: 3.99,
     phases: [
-      { year: '1', rate: 3.99, type: 'Fixed' },
-      { year: '2-3', rate: 6.99, type: 'Fixed' },
-      { year: '4-5', rate: 10.49, type: 'Fixed' },
-      { year: '6+', rate: 13.0, type: 'Floating' }
-    ]
+      { year: "1", rate: 3.99, type: "Fixed" },
+      { year: "2-3", rate: 6.99, type: "Fixed" },
+      { year: "4-5", rate: 10.49, type: "Fixed" },
+      { year: "6+", rate: 13.0, type: "Floating" },
+    ],
   },
   {
     id: 2,
-    type: 'konvensional',
-    bankName: 'Mandiri',
-    programName: 'KPR Mandiri Fixed',
-    logo: '🏦',
-    interestType: 'Berjenjang',
+    type: "konvensional",
+    bankName: "Mandiri",
+    programName: "KPR Mandiri Fixed",
+    logo: "/logos/banks/Mandiri.svg",
+    interestType: "Berjenjang",
     startingRate: 4.25,
     phases: [
-      { year: '1-2', rate: 4.25, type: 'Fixed' },
-      { year: '3-5', rate: 7.50, type: 'Fixed' },
-      { year: '6+', rate: 12.75, type: 'Floating' }
-    ]
+      { year: "1-2", rate: 4.25, type: "Fixed" },
+      { year: "3-5", rate: 7.5, type: "Fixed" },
+      { year: "6+", rate: 12.75, type: "Floating" },
+    ],
   },
   {
     id: 3,
-    type: 'konvensional',
-    bankName: 'BRI',
-    programName: 'KPR BRI Griya',
-    logo: '🏦',
-    interestType: 'Berjenjang',
+    type: "konvensional",
+    bankName: "BRI",
+    programName: "KPR BRI Griya",
+    logo: "/logos/banks/BRI.svg",
+    interestType: "Berjenjang",
     startingRate: 3.88,
     phases: [
-      { year: '1', rate: 3.88, type: 'Fixed' },
-      { year: '2', rate: 5.88, type: 'Fixed' },
-      { year: '3-4', rate: 9.38, type: 'Fixed' },
-      { year: '5+', rate: 13.25, type: 'Floating' }
-    ]
+      { year: "1", rate: 3.88, type: "Fixed" },
+      { year: "2", rate: 5.88, type: "Fixed" },
+      { year: "3-4", rate: 9.38, type: "Fixed" },
+      { year: "5+", rate: 13.25, type: "Floating" },
+    ],
   },
   {
     id: 4,
-    type: 'konvensional',
-    bankName: 'BTN',
-    programName: 'KPR Platinum',
-    logo: '🏦',
-    interestType: 'Berjenjang',
+    type: "konvensional",
+    bankName: "BTN",
+    programName: "KPR Platinum",
+    logo: "/logos/banks/BTN.svg",
+    interestType: "Berjenjang",
     startingRate: 4.15,
     phases: [
-      { year: '1-2', rate: 4.15, type: 'Fixed' },
-      { year: '3-4', rate: 7.85, type: 'Fixed' },
-      { year: '5+', rate: 12.50, type: 'Floating' }
-    ]
+      { year: "1-2", rate: 4.15, type: "Fixed" },
+      { year: "3-4", rate: 7.85, type: "Fixed" },
+      { year: "5+", rate: 12.5, type: "Floating" },
+    ],
   },
   {
     id: 5,
-    type: 'konvensional',
-    bankName: 'CIMB Niaga',
-    programName: 'KPR CIMB Xtra',
-    logo: '🏦',
-    interestType: 'Berjenjang',
-    startingRate: 4.50,
+    type: "konvensional",
+    bankName: "CIMB Niaga",
+    programName: "KPR CIMB Xtra",
+    logo: "/logos/banks/CIMB Niaga.svg",
+    interestType: "Berjenjang",
+    startingRate: 4.5,
     phases: [
-      { year: '1', rate: 4.50, type: 'Fixed' },
-      { year: '2-3', rate: 7.25, type: 'Fixed' },
-      { year: '4+', rate: 13.00, type: 'Floating' }
-    ]
+      { year: "1", rate: 4.5, type: "Fixed" },
+      { year: "2-3", rate: 7.25, type: "Fixed" },
+      { year: "4+", rate: 13.0, type: "Floating" },
+    ],
   },
   // Syariah Banks
   {
     id: 6,
-    type: 'syariah',
-    bankName: 'BCA Syariah',
-    programName: 'iB KPR Griya',
-    logo: '🕌',
-    interestType: 'Fixed',
-    startingRate: 2.70,
+    type: "syariah",
+    bankName: "BCA Syariah",
+    programName: "iB KPR Griya",
+    logo: "/logos/banks/BCA Syariah.svg",
+    interestType: "Fixed",
+    startingRate: 2.7,
     phases: [
-      { year: '1-3', rate: 2.70, type: 'Margin Tetap' },
-      { year: '4-25', rate: 13.00, type: 'Margin Tetap' }
-    ]
+      { year: "1-3", rate: 2.7, type: "Margin Tetap" },
+      { year: "4-25", rate: 13.0, type: "Margin Tetap" },
+    ],
   },
   {
     id: 7,
-    type: 'syariah',
-    bankName: 'Mandiri Syariah',
-    programName: 'KPR iB Griya Berkah',
-    logo: '🕌',
-    interestType: 'Fixed',
+    type: "syariah",
+    bankName: "BSI (ex-Mandiri Syariah)",
+    programName: "KPR iB Griya Berkah",
+    logo: "/logos/banks/BSI.svg",
+    interestType: "Fixed",
     startingRate: 2.99,
     phases: [
-      { year: '1-2', rate: 2.99, type: 'Margin Tetap' },
-      { year: '3-25', rate: 12.50, type: 'Margin Tetap' }
-    ]
+      { year: "1-2", rate: 2.99, type: "Margin Tetap" },
+      { year: "3-25", rate: 12.5, type: "Margin Tetap" },
+    ],
   },
   {
     id: 8,
-    type: 'syariah',
-    bankName: 'BRI Syariah',
-    programName: 'KPR iB Griya Hasanah',
-    logo: '🕌',
-    interestType: 'Fixed',
-    startingRate: 3.20,
+    type: "syariah",
+    bankName: "CIMB Niaga Syariah",
+    programName: "KPR iB Griya Hasanah",
+    logo: "/logos/banks/CIMB Niaga Syariah.svg",
+    interestType: "Fixed",
+    startingRate: 3.2,
     phases: [
-      { year: '1-3', rate: 3.20, type: 'Margin Tetap' },
-      { year: '4-25', rate: 13.20, type: 'Margin Tetap' }
-    ]
+      { year: "1-3", rate: 3.2, type: "Margin Tetap" },
+      { year: "4-25", rate: 13.2, type: "Margin Tetap" },
+    ],
   },
   {
     id: 9,
-    type: 'syariah',
-    bankName: 'BTN Syariah',
-    programName: 'KPR Sejahtera iB',
-    logo: '🕌',
-    interestType: 'Fixed',
+    type: "syariah",
+    bankName: "BTN Syariah",
+    programName: "KPR Sejahtera iB",
+    logo: "/logos/banks/BTN Syariah.svg",
+    interestType: "Fixed",
     startingRate: 2.85,
     phases: [
-      { year: '1-2', rate: 2.85, type: 'Margin Tetap' },
-      { year: '3-25', rate: 12.75, type: 'Margin Tetap' }
-    ]
+      { year: "1-2", rate: 2.85, type: "Margin Tetap" },
+      { year: "3-25", rate: 12.75, type: "Margin Tetap" },
+    ],
   },
   {
     id: 10,
-    type: 'syariah',
-    bankName: 'Muamalat',
-    programName: 'KPR iB Hunian',
-    logo: '🕌',
-    interestType: 'Fixed',
-    startingRate: 3.50,
+    type: "syariah",
+    bankName: "Muamalat",
+    programName: "KPR iB Hunian",
+    logo: "/logos/banks/Mualamat.svg",
+    interestType: "Fixed",
+    startingRate: 3.5,
     phases: [
-      { year: '1-3', rate: 3.50, type: 'Margin Tetap' },
-      { year: '4-25', rate: 13.50, type: 'Margin Tetap' }
-    ]
-  }
+      { year: "1-3", rate: 3.5, type: "Margin Tetap" },
+      { year: "4-25", rate: 13.5, type: "Margin Tetap" },
+    ],
+  },
 ];
 
 export function KPRSimulationPage() {
@@ -399,22 +399,48 @@ export function KPRSimulationPage() {
                     const isExpanded = expandedBankId === bank.id;
 
                     return (
-                      <div key={bank.id} className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all border border-slate-200">
+                      <div
+                        key={bank.id}
+                        className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all border border-slate-200"
+                      >
                         <div className="p-6">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex items-start gap-4">
-                              <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-2xl">
-                                {bank.logo}
+                              <div className="w-14 h-14 bg-white rounded-xl border border-slate-200 flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0">
+                                <img
+                                  src={bank.logo}
+                                  alt={`Logo ${bank.bankName}`}
+                                  className="w-full h-full object-contain"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                    const fallback = e.currentTarget
+                                      .nextElementSibling as HTMLElement;
+                                    if (fallback)
+                                      fallback.style.display = "flex";
+                                  }}
+                                />
+                                <span className="hidden w-full h-full items-center justify-center text-xs font-bold text-slate-500 bg-slate-100 rounded-lg">
+                                  {bank.bankName
+                                    .split(" ")[0]
+                                    .slice(0, 3)
+                                    .toUpperCase()}
+                                </span>
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold text-slate-900">{bank.bankName}</h3>
-                                <p className="text-slate-600">{bank.programName}</p>
+                                <h3 className="text-xl font-bold text-slate-900">
+                                  {bank.bankName}
+                                </h3>
+                                <p className="text-slate-600">
+                                  {bank.programName}
+                                </p>
                                 <div className="mt-2">
-                                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                                    bank.type === 'konvensional' 
-                                      ? 'bg-blue-100 text-blue-700' 
-                                      : 'bg-green-100 text-green-700'
-                                  }`}>
+                                  <span
+                                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                                      bank.type === "konvensional"
+                                        ? "bg-blue-100 text-blue-700"
+                                        : "bg-green-100 text-green-700"
+                                    }`}
+                                  >
                                     {bank.interestType}
                                   </span>
                                 </div>
@@ -424,20 +450,33 @@ export function KPRSimulationPage() {
 
                           {/* Monthly Installment */}
                           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 mb-4 border border-blue-100">
-                            <p className="text-sm text-slate-600 mb-1">Cicilan Awal per Bulan</p>
+                            <p className="text-sm text-slate-600 mb-1">
+                              Cicilan Awal per Bulan
+                            </p>
                             <p className="text-3xl font-bold bg-gradient-to-r from-[#2563EB] to-[#3B82F6] bg-clip-text text-transparent">
                               Mulai dari {formatCurrency(monthlyInstallment)}
                             </p>
                             <p className="text-xs text-slate-600 mt-2">
-                              {bank.startingRate}% {bank.type === 'konvensional' ? 'fixed' : 'margin'} tahun pertama
-                              {bank.type === 'konvensional' && <span className="text-blue-600"> + floating ~13%</span>}
+                              {bank.startingRate}%{" "}
+                              {bank.type === "konvensional"
+                                ? "fixed"
+                                : "margin"}{" "}
+                              tahun pertama
+                              {bank.type === "konvensional" && (
+                                <span className="text-blue-600">
+                                  {" "}
+                                  + floating ~13%
+                                </span>
+                              )}
                             </p>
                           </div>
 
                           {/* Action Buttons */}
                           <div className="flex gap-3 mb-4">
                             <button
-                              onClick={() => setExpandedBankId(isExpanded ? null : bank.id)}
+                              onClick={() =>
+                                setExpandedBankId(isExpanded ? null : bank.id)
+                              }
                               className="flex-1 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
                             >
                               {isExpanded ? (
@@ -466,27 +505,39 @@ export function KPRSimulationPage() {
                               </h4>
                               <div className="space-y-3">
                                 {bank.phases.map((phase, index) => {
-                                  const phaseMonthlyPayment = calculateMonthlyInstallment(bank);
-                                  
+                                  const phaseMonthlyPayment =
+                                    calculateMonthlyInstallment(bank);
+
                                   return (
-                                    <div key={index} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                                    <div
+                                      key={index}
+                                      className="bg-slate-50 rounded-lg p-4 border border-slate-200"
+                                    >
                                       <div className="flex justify-between items-start mb-2">
                                         <div>
-                                          <p className="font-semibold text-slate-900">Tahun {phase.year}</p>
+                                          <p className="font-semibold text-slate-900">
+                                            Tahun {phase.year}
+                                          </p>
                                           <p className="text-sm text-slate-600">
                                             {phase.type}: {phase.rate}%
                                           </p>
                                         </div>
                                         <div className="text-right">
                                           <p className="text-lg font-bold text-blue-600">
-                                            ~{formatCurrency(phaseMonthlyPayment)}
+                                            ~
+                                            {formatCurrency(
+                                              phaseMonthlyPayment,
+                                            )}
                                           </p>
-                                          <p className="text-xs text-slate-500">per bulan</p>
+                                          <p className="text-xs text-slate-500">
+                                            per bulan
+                                          </p>
                                         </div>
                                       </div>
-                                      {phase.type === 'Floating' && (
+                                      {phase.type === "Floating" && (
                                         <p className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded">
-                                          ⚠️ Floating rate mengikuti kondisi pasar dan kebijakan bank
+                                          ⚠️ Floating rate mengikuti kondisi
+                                          pasar dan kebijakan bank
                                         </p>
                                       )}
                                     </div>
@@ -494,10 +545,11 @@ export function KPRSimulationPage() {
                                 })}
                               </div>
 
-                              {bank.type === 'syariah' && (
+                              {bank.type === "syariah" && (
                                 <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                                   <p className="text-sm text-green-800">
-                                    ✓ Tidak menggunakan bunga, menggunakan margin tetap sesuai akad
+                                    ✓ Tidak menggunakan bunga, menggunakan
+                                    margin tetap sesuai akad
                                   </p>
                                 </div>
                               )}
