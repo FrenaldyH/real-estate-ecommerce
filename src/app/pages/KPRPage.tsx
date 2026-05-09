@@ -10,9 +10,11 @@ import { ImageWithFallback } from '../components/common/ImageWithFallback';
 import { KPRDictionary } from '../components/KPRDictionary';
 import { getKPRArticles } from '../data/blogArticles';
 import { getProperties, mapToPropertyCard } from '../services/properties';
+import { useToast } from '../context/ToastContext';
 
 export function KPRPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
@@ -501,10 +503,18 @@ export function KPRPage() {
             Konsultasikan kebutuhan KPR Anda dengan tim ahli kami sekarang juga
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-[#2563EB] rounded-xl hover:shadow-2xl transition-all font-bold text-lg">
+            <a
+              href="https://wa.me/6285385560367?text=Halo%20RumahKu%2C%20saya%20ingin%20konsultasi%20KPR."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-white text-[#2563EB] rounded-xl hover:shadow-2xl transition-all font-bold text-lg text-center"
+            >
               Hubungi Konsultan KPR
-            </button>
-            <button className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white rounded-xl hover:bg-white/20 transition-all font-bold text-lg">
+            </a>
+            <button
+              onClick={() => navigate('/properties?listing-type=dijual')}
+              className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white rounded-xl hover:bg-white/20 transition-all font-bold text-lg"
+            >
               Lihat Properti KPR
             </button>
           </div>
@@ -803,9 +813,7 @@ export function KPRPage() {
               {/* Download Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  onClick={() =>
-                    alert("Aplikasi RumahKu akan segera tersedia di App Store!")
-                  }
+                  onClick={() => showToast('Aplikasi RumahKu akan segera hadir di App Store!', 'info')}
                   className="flex items-center gap-3 bg-black text-white px-6 py-4 rounded-xl hover:bg-gray-900 transition-colors"
                 >
                   <svg
@@ -822,11 +830,7 @@ export function KPRPage() {
                 </button>
 
                 <button
-                  onClick={() =>
-                    alert(
-                      "Aplikasi RumahKu akan segera tersedia di Google Play Store!",
-                    )
-                  }
+                  onClick={() => showToast('Aplikasi RumahKu akan segera hadir di Google Play!', 'info')}
                   className="flex items-center gap-3 bg-black text-white px-6 py-4 rounded-xl hover:bg-gray-900 transition-colors"
                 >
                   <svg

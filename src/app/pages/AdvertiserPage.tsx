@@ -5,8 +5,10 @@ import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { LoginModal } from '../components/auth/LoginModal';
 import { RegisterModal } from '../components/auth/RegisterModal';
+import { useToast } from '../context/ToastContext';
 
 export function AdvertiserPage() {
+  const { showToast } = useToast();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openTip, setOpenTip] = useState<number | null>(null);
@@ -133,18 +135,14 @@ export function AdvertiserPage() {
 
   const handleEstimate = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Show estimation result in alert
-    alert(`Estimasi Harga Properti\n\nLokasi: ${estimateAddress}\n\nKisaran Harga: Rp 2,1M - Rp 2,5M\nEstimasi Tengah: Rp 2,3M\nTren Pasar: +5.2% vs bulan lalu\n\nBerdasarkan analisis 127 properti serupa menggunakan AI.\n\nSilakan pasang iklan untuk mendapatkan analisis detail gratis dari tim kami!`);
-
-    // Close modal and reset
     setShowEstimateModal(false);
     setEstimateAddress('');
+    showToast('Estimasi harga: Rp 2,1M – Rp 2,5M berdasarkan 127 properti serupa. Pasang iklan untuk analisis detail gratis!', 'info');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Listing properti "${formData.title}" berhasil dibuat! Tim kami akan menghubungi Anda dalam 1x24 jam.`);
+    showToast(`Listing "${formData.title}" berhasil dibuat! Tim kami akan menghubungi Anda dalam 1x24 jam.`, 'success');
   };
 
   return (
