@@ -223,7 +223,13 @@ export function PropertyDetailPage() {
 
                   {/* Actions */}
                   <div className="absolute top-4 right-4 flex gap-2">
-                    <button className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        showToast('Link properti berhasil disalin!', 'success');
+                      }}
+                      className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+                    >
                       <Share2 className="w-5 h-5 text-gray-900" />
                     </button>
                     <button
@@ -673,20 +679,33 @@ export function PropertyDetailPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <button className="w-full bg-[#2563EB] text-white py-3 rounded-xl hover:bg-[#1d4ed8] transition-colors font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
+                    <a
+                      href={`tel:+6285385560367`}
+                      className="w-full bg-[#2563EB] text-white py-3 rounded-xl hover:bg-[#1d4ed8] transition-colors font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30"
+                    >
                       <Phone className="w-5 h-5" />
                       Hubungi Agen
-                    </button>
+                    </a>
 
-                    <button className="w-full bg-[#10B981] text-white py-3 rounded-xl hover:bg-[#059669] transition-colors font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-500/30">
+                    <a
+                      href={`https://wa.me/6285385560367?text=${encodeURIComponent(`Halo, saya tertarik dengan properti "${property?.title ?? ''}" di RumahKu. Boleh saya tahu informasi lebih lanjut?`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-[#10B981] text-white py-3 rounded-xl hover:bg-[#059669] transition-colors font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-500/30"
+                    >
                       <MessageCircle className="w-5 h-5" />
                       Chat via WhatsApp
-                    </button>
+                    </a>
 
-                    <button className="w-full border-2 border-[#2563EB] text-[#2563EB] py-3 rounded-xl hover:bg-blue-50 transition-colors font-bold flex items-center justify-center gap-2">
+                    <a
+                      href={`https://wa.me/6285385560367?text=${encodeURIComponent(`Halo, saya ingin menjadwalkan survey untuk properti "${property?.title ?? ''}" di RumahKu.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full border-2 border-[#2563EB] text-[#2563EB] py-3 rounded-xl hover:bg-blue-50 transition-colors font-bold flex items-center justify-center gap-2"
+                    >
                       <Calendar className="w-5 h-5" />
                       Jadwalkan Survey
-                    </button>
+                    </a>
                   </div>
 
                   <div className="mt-6 pt-6 border-t border-gray-200">
