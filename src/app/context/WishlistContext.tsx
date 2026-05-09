@@ -29,10 +29,10 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { showToast } = useToast();
   const [wishlist, setWishlist] = useLocalStorage<Property[]>('rumahku-wishlist', []);
-  // Maps propertyId → API wishlist record id (needed for DELETE)
+  // Maps propertyId => API wishlist record id (needed for DELETE)
   const apiIdMap = useRef<Map<number, number>>(new Map());
 
   // When user logs in, fetch API wishlist and sync property IDs into local state
@@ -40,37 +40,29 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!isAuthenticated) return;
     getWishlists()
       .then((items) => {
+        // Rebuild the apiIdMap from fresh server data
+        apiIdMap.current.clear();
         items.forEach((item) => {
-          // Store API record id for later deletion
-          apiIdMap.current.set(item.property_id, item.id);
-          // If the API embeds full property data, add it to local wishlist
-          if (item.property) {
-            setWishlist((prev) => {
-              const alreadyIn = prev.some((p) => p.id === item.property_id);
-              if (alreadyIn) return prev;
-              const p = item.property!;
-              return [...prev, {
-                id: p.id,
-                image: p.primary_image?.image_url ?? p.images?.[0]?.image_url ?? '',
-                price: p.price,
-                title: p.title,
-                location: [p.city, p.province].filter(Boolean).join(', ') || p.address || '',
-                landSize: p.land_size,
-                buildingSize: p.building_size,
-                featured: p.is_featured,
-              }];
-            });
-          }
+          apiIdMap.current.set(item.property.id, item.id);
         });
-        // Remove local items that are no longer in API wishlist
-        const apiPropertyIds = new Set(items.map((i) => i.property_id));
-        setWishlist((prev) => prev.filter((p) => {
-          // Keep items not yet in API (will be added) or confirmed in API
-          return !isAuthenticated || apiPropertyIds.has(p.id) || !apiIdMap.current.has(p.id);
-        }));
+        // Replace local wishlist with server state
+        const serverItems = items.map((item) => {
+          const p = item.property;
+          return {
+            id: p.id,
+            image: p.primary_image?.image_url ?? p.images?.[0]?.image_url ?? '',
+            price: p.price,
+            title: p.title,
+            location: [p.city, p.province].filter(Boolean).join(', ') || p.address || '',
+            landSize: p.land_size,
+            buildingSize: p.building_size,
+            featured: p.is_featured,
+          };
+        });
+        setWishlist(serverItems);
       })
       .catch(() => {
-        // silently ignore — keep localStorage wishlist as-is
+        // silently ignore, keep localStorage wishlist as-is
       });
   }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -80,8 +72,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       return [...prev, property];
     });
     showToast('Properti ditambahkan ke wishlist', 'success');
-    if (isAuthenticated) {
-      apiAdd(property.id)
+    if (isAuthenticated && user) {
+      apiAdd(property.id, user.id)
         .then((item) => { apiIdMap.current.set(property.id, item.id); })
         .catch(() => {});
     }
