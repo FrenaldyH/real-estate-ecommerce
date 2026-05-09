@@ -1,16 +1,29 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/handler"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/middleware"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/repository"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/service"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
+
+	// [CORS]
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "https://example.com"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// [REPOSITORY LAYER]
 	userRepo := repository.NewUserRepository(db)
@@ -19,6 +32,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	imageRepo := repository.NewPropertyImageRepository(db)
 	facilityRepo := repository.NewPropertyFacilityRepository(db)
 	wishlistRepo := repository.NewWishlistRepository(db)
+	reviewRepo := repository.NewReviewRepository(db)
 
 	// [SERVICE LAYER]
 	userService := service.NewUserService(userRepo)
@@ -26,6 +40,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	authService := service.NewAuthService(userRepo)
 	propertyService := service.NewPropertyService(propertyRepo, imageRepo, facilityRepo, agentRepo)
 	wishlistService := service.NewWishlistService(wishlistRepo, userRepo)
+	reviewService := service.NewReviewService(reviewRepo, userRepo)
 
 	// [HANDLER LAYER]
 	agentHandler := handler.NewAgentHandler(agentService)
@@ -33,6 +48,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	authHandler := handler.NewAuthHandler(authService)
 	propertyHandler := handler.NewPropertyHandler(propertyService)
 	wishlistHandler := handler.NewWishlistHandler(wishlistService)
+	reviewHandler := handler.NewReviewHandler(reviewService)
 
 	api := r.Group("/api")
 
@@ -71,6 +87,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		property.GET("/:id", propertyHandler.GetByID)
 		property.GET("/:id/images", propertyHandler.GetImages)
 		property.GET("/:id/facility", propertyHandler.GetFacilities)
+		property.GET("/:id/review", reviewHandler.GetReviews)
+		property.POST("/:id/review", middleware.Auth(), reviewHandler.CreateReview)
 
 		protectedProperty := property.Group("").Use(middleware.Auth(), middleware.Agent())
 		{
@@ -88,6 +106,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		wishlist.GET("", wishlistHandler.GetUserWishlists)
 		wishlist.POST("", wishlistHandler.CreateUserWishlist)
 		wishlist.DELETE("/:wishlist-id", wishlistHandler.DeleteUserWishlist)
+	}
+
+	review := api.Group("/review").Use(middleware.Auth())
+	{
+		review.PUT("/:property_id", reviewHandler.UpdateReview)
+		review.DELETE("/:property_id", reviewHandler.DeleteReview)
 	}
 
 	return r
