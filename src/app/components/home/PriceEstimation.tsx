@@ -1,24 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ImageWithFallback } from '../common/ImageWithFallback';
 import { useWishlist } from '../../context/WishlistContext';
+import { useChat } from '../../context/ChatContext';
+
+function MessageText({ text }: { text: string }) {
+  const parts = text.split(/\*\*(.*?)\*\*/gs);
+  return (
+    <span className="whitespace-pre-wrap">
+      {parts.map((part, i) =>
+        i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+      )}
+    </span>
+  );
+}
 
 export function PriceEstimation() {
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'bot',
-      text: 'Halo! 👋 Saya RumahKu AI Assistant. Saya siap membantu Anda menemukan rumah impian yang sesuai dengan budget Anda.',
-      timestamp: new Date()
-    },
-    {
-      id: 2,
-      type: 'bot',
-      text: 'Tanyakan apapun tentang properti, budget, lokasi, atau gunakan tombol quick action di bawah untuk memulai!',
-      timestamp: new Date()
-    }
-  ]);
+  const { messages, typing, sendMessage } = useChat();
   const [inputMessage, setInputMessage] = useState('');
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = chatContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, typing]);
 
   const affordableProperties = [
     {
@@ -40,28 +45,10 @@ export function PriceEstimation() {
   ];
 
   const handleSendMessage = () => {
-    if (inputMessage.trim()) {
-      const newUserMessage = {
-        id: messages.length + 1,
-        type: 'user',
-        text: inputMessage,
-        timestamp: new Date()
-      };
-
-      setMessages([...messages, newUserMessage]);
-      setInputMessage('');
-
-      // Simulate AI response
-      setTimeout(() => {
-        const botResponse = {
-          id: messages.length + 2,
-          type: 'bot',
-          text: 'Terima kasih atas pertanyaannya! Saya siap membantu Anda dengan informasi properti, budget, dan lokasi. Ada yang bisa saya bantu lagi? 🏠',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, botResponse]);
-      }, 1000);
-    }
+    const text = inputMessage.trim();
+    if (!text || typing) return;
+    setInputMessage('');
+    sendMessage(text);
   };
 
   return (
@@ -86,7 +73,7 @@ export function PriceEstimation() {
           </div>
 
           {/* Chat Messages */}
-          <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-6 mb-4 h-96 overflow-y-auto">
+          <div ref={chatContainerRef} className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-6 mb-4 h-96 overflow-y-auto">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -106,7 +93,7 @@ export function PriceEstimation() {
                         ? 'bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white'
                         : 'bg-white text-[#0F172A] border border-slate-200'
                     }`}>
-                      <p className="text-sm leading-relaxed">{message.text}</p>
+                      <p className="text-sm leading-relaxed"><MessageText text={message.text} /></p>
                     </div>
                   </div>
                 </div>
@@ -117,14 +104,16 @@ export function PriceEstimation() {
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
             <button
-              onClick={() => setInputMessage('Berapa budget yang saya butuhkan?')}
-              className="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl hover:shadow-md transition-all text-sm font-medium text-[#0F172A]"
+              onClick={() => { setInputMessage(''); sendMessage('Berapa budget yang saya butuhkan?'); }}
+              disabled={typing}
+              className="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl hover:shadow-md transition-all text-sm font-medium text-[#0F172A] disabled:opacity-40"
             >
               💰 Budget Info
             </button>
             <button
-              onClick={() => setInputMessage('Lokasi properti mana yang bagus?')}
-              className="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl hover:shadow-md transition-all text-sm font-medium text-[#0F172A]"
+              onClick={() => { setInputMessage(''); sendMessage('Lokasi properti mana yang bagus?'); }}
+              disabled={typing}
+              className="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl hover:shadow-md transition-all text-sm font-medium text-[#0F172A] disabled:opacity-40"
             >
               📍 Rekomendasi Lokasi
             </button>
@@ -142,7 +131,8 @@ export function PriceEstimation() {
             />
             <button
               onClick={handleSendMessage}
-              className="px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all font-semibold flex items-center gap-2"
+              disabled={!inputMessage.trim() || typing}
+              className="px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all font-semibold flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

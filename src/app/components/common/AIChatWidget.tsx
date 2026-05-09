@@ -1,27 +1,28 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { X, Send, MessageCircle, Minimize2 } from 'lucide-react';
+import { useChat } from '../../context/ChatContext';
 
-interface Message {
-  id: number;
-  type: 'bot' | 'user';
-  text: string;
+function MessageText({ text }: { text: string }) {
+  const parts = text.split(/\*\*(.*?)\*\*/gs);
+  return (
+    <span className="whitespace-pre-wrap">
+      {parts.map((part, i) =>
+        i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+      )}
+    </span>
+  );
 }
-
-const INITIAL_MESSAGES: Message[] = [
-  { id: 1, type: 'bot', text: 'Halo! 👋 Saya RumahKu AI Assistant. Ada yang bisa saya bantu?' },
-];
 
 export function AIChatWidget() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { messages, typing, sendMessage } = useChat();
 
   const [sectionVisible, setSectionVisible] = useState(false);
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
-  const [typing, setTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const pendingScroll = useRef(false);
 
   // Re-run whenever the route changes so the observer is always fresh
@@ -53,31 +54,16 @@ export function AIChatWidget() {
     return () => observer.disconnect();
   }, [location.pathname]);
 
-  // Scroll chat to bottom on new messages or when popup opens
   useEffect(() => {
-    if (open) {
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-    }
-  }, [messages, open]);
+    const el = chatContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, typing, open]);
 
-  const sendMessage = () => {
+  const handleSend = () => {
     const text = input.trim();
     if (!text || typing) return;
-    const id = Date.now();
-    setMessages((prev) => [...prev, { id, type: 'user', text }]);
     setInput('');
-    setTyping(true);
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: id + 1,
-          type: 'bot',
-          text: 'Terima kasih atas pertanyaannya! Saya siap membantu Anda dengan informasi properti, budget, dan lokasi. 🏠',
-        },
-      ]);
-      setTyping(false);
-    }, 1000);
+    sendMessage(text);
   };
 
   const goToSection = () => {
@@ -90,7 +76,7 @@ export function AIChatWidget() {
     }
   };
 
-  const hasUnread = !open && messages.length > INITIAL_MESSAGES.length;
+  const hasUnread = !open && messages.length > 2;
 
   return (
     <>
@@ -135,7 +121,7 @@ export function AIChatWidget() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-br from-slate-50 to-blue-50">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex items-end gap-2 ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.type === 'bot' && (
@@ -150,7 +136,7 @@ export function AIChatWidget() {
                   ? 'bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white rounded-br-sm'
                   : 'bg-white text-[#0F172A] border border-slate-200 rounded-bl-sm'
               }`}>
-                {msg.text}
+                <MessageText text={msg.text} />
               </div>
             </div>
           ))}
@@ -172,20 +158,21 @@ export function AIChatWidget() {
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Quick actions */}
         <div className="px-3 pt-2 flex gap-2 flex-shrink-0">
           <button
-            onClick={() => setInput('Berapa budget yang saya butuhkan?')}
-            className="flex-1 px-2 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs font-medium text-[#2563EB] hover:bg-blue-100 transition-colors truncate"
+            onClick={() => { setInput(''); sendMessage('Berapa budget yang saya butuhkan?'); }}
+            disabled={typing}
+            className="flex-1 px-2 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs font-medium text-[#2563EB] hover:bg-blue-100 transition-colors truncate disabled:opacity-40"
           >
             💰 Budget
           </button>
           <button
-            onClick={() => setInput('Lokasi properti mana yang bagus?')}
-            className="flex-1 px-2 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs font-medium text-[#2563EB] hover:bg-blue-100 transition-colors truncate"
+            onClick={() => { setInput(''); sendMessage('Lokasi properti mana yang bagus?'); }}
+            disabled={typing}
+            className="flex-1 px-2 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs font-medium text-[#2563EB] hover:bg-blue-100 transition-colors truncate disabled:opacity-40"
           >
             📍 Lokasi
           </button>
@@ -197,12 +184,12 @@ export function AIChatWidget() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Tanyakan tentang properti..."
             className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] text-[#0F172A]"
           />
           <button
-            onClick={sendMessage}
+            onClick={handleSend}
             disabled={!input.trim() || typing}
             className="w-9 h-9 bg-[#2563EB] text-white rounded-xl flex items-center justify-center hover:bg-[#1d4ed8] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >

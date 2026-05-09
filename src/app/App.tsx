@@ -3,13 +3,16 @@ import { router } from './routes';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { ChatProvider } from './context/ChatContext';
 
 export default function App() {
   return (
     <ToastProvider>
       <AuthProvider>
         <WishlistProvider>
-          <RouterProvider router={router} />
+          <ChatProvider>
+            <RouterProvider router={router} />
+          </ChatProvider>
         </WishlistProvider>
       </AuthProvider>
     </ToastProvider>
