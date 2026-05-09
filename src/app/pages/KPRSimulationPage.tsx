@@ -491,10 +491,15 @@ export function KPRSimulationPage() {
                                 </>
                               )}
                             </button>
-                            <button className="flex-1 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white rounded-xl hover:shadow-lg transition-all font-semibold flex items-center justify-center gap-2">
+                            <a
+                              href={`https://wa.me/6285385560367?text=${encodeURIComponent(`Halo RumahKu, saya ingin konsultasi KPR untuk program ${bank.name}.`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white rounded-xl hover:shadow-lg transition-all font-semibold flex items-center justify-center gap-2"
+                            >
                               <Phone className="w-4 h-4" />
                               Ajukan / Konsultasi
-                            </button>
+                            </a>
                           </div>
 
                           {/* Expanded Detail */}
