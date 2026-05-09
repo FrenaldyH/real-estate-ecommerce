@@ -87,8 +87,33 @@ export function getPropertyFacilities(id: string | number) {
   return apiFetch<ApiPropertyFacility[]>(`/api/property/${id}/facility`);
 }
 
-// POST /api/property (auth required)
-export function postProperty(data: Partial<ApiProperty>) {
+export interface CreatePropertyRequest {
+  property_type_id: number;
+  title: string;
+  description: string;
+  price: number;
+  address: string;
+  city: string;
+  province: string;
+  listing_type: 'dijual' | 'disewa';
+  payment_method: 'cash' | 'kpr' | 'cash_bertahap' | 'all';
+  is_negotiable?: boolean;
+  facing_direction?: string;
+  has_car_access?: boolean;
+  electrical_power?: number;
+  land_size: number;
+  building_size: number;
+  floors: number;
+  certificate: string;
+  furnishing: string;
+  year_built: number;
+  is_featured?: boolean;
+  rent_period?: string;
+  imb_pbb?: boolean;
+}
+
+// POST /api/property (auth + agent role required)
+export function postProperty(data: CreatePropertyRequest) {
   return apiFetch<ApiProperty>('/api/property', {
     method: 'POST',
     body: JSON.stringify(data),

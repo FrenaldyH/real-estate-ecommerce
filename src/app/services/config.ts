@@ -26,7 +26,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   const json = await res.json();
 
   if (!res.ok || json.success === false) {
-    throw new Error(json.message ?? `Request gagal (HTTP ${res.status})`);
+    throw new Error(json.error ?? json.message ?? `Request gagal (HTTP ${res.status})`);
   }
 
   return json.data as T;
