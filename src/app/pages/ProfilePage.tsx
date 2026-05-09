@@ -26,6 +26,7 @@ export function ProfilePage() {
   const [agentBio, setAgentBio] = useState('');
   const [agentSiup, setAgentSiup] = useState('');
   const [agentError, setAgentError] = useState('');
+  const [agentSuccess, setAgentSuccess] = useState(false);
 
   const startEdit = () => {
     setEditData({
@@ -77,9 +78,11 @@ export function ProfilePage() {
     try {
       await createAgent({ bio_description: agentBio, agency_id: 1, siup4: agentSiup });
       setAgentFormOpen(false);
-      alert('Selamat! Akun Anda berhasil diupgrade menjadi agen properti. Silakan login ulang.');
-      logout();
-      navigate('/');
+      setAgentSuccess(true);
+      setTimeout(() => {
+        logout();
+        navigate('/');
+      }, 2500);
     } catch (err: unknown) {
       setAgentError(err instanceof Error ? err.message : 'Gagal mendaftar sebagai agen');
     } finally {
@@ -340,7 +343,13 @@ export function ProfilePage() {
               </div>
             </div>
 
-            {!agentFormOpen ? (
+            {agentSuccess ? (
+              <div className="bg-white/20 rounded-xl p-5 text-center">
+                <Check className="w-10 h-10 mx-auto mb-2" />
+                <p className="font-bold text-lg mb-1">Pendaftaran Berhasil!</p>
+                <p className="text-blue-100 text-sm">Akun Anda diupgrade menjadi agen. Mengalihkan ke beranda...</p>
+              </div>
+            ) : !agentFormOpen ? (
               <button
                 onClick={() => setAgentFormOpen(true)}
                 className="w-full py-3 bg-white text-[#2563EB] rounded-xl font-bold hover:bg-blue-50 transition-colors"
