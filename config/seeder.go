@@ -370,32 +370,46 @@ func seedPropertyImages(db *gorm.DB) {
 	var properties []model.Property
 	db.Find(&properties)
 
+	imagesByTitle := map[string][]model.PropertyImage{
+		"Rumah Mewah BSD City Tangerang": {
+			{ImageURL: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&auto=format&fit=crop", IsPrimary: true, SortOrder: 1},
+			{ImageURL: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 2},
+			{ImageURL: "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 3},
+		},
+		"Apartemen Studio Sudirman Jakarta Pusat": {
+			{ImageURL: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80&auto=format&fit=crop", IsPrimary: true, SortOrder: 1},
+			{ImageURL: "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 2},
+			{ImageURL: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 3},
+		},
+		"Ruko Strategis Gubeng Surabaya": {
+			{ImageURL: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80&auto=format&fit=crop", IsPrimary: true, SortOrder: 1},
+			{ImageURL: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 2},
+			{ImageURL: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 3},
+		},
+		"Tanah Kavling Citraland Surabaya Barat": {
+			{ImageURL: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80&auto=format&fit=crop", IsPrimary: true, SortOrder: 1},
+			{ImageURL: "https://images.unsplash.com/photo-1500076656116-558758c991c1?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 2},
+			{ImageURL: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 3},
+		},
+		"Villa Pemandangan Sawah Ubud Bali": {
+			{ImageURL: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800&q=80&auto=format&fit=crop", IsPrimary: true, SortOrder: 1},
+			{ImageURL: "https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 2},
+			{ImageURL: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80&auto=format&fit=crop", IsPrimary: false, SortOrder: 3},
+		},
+	}
+
 	for _, p := range properties {
-		images := []model.PropertyImage{
-			{
-				PropertyID: p.ID,
-				ImageURL:   "https://storage.properti.com/" + p.Title + "/main.jpg",
-				IsPrimary:  true,
-				SortOrder:  1,
-			},
-			{
-				PropertyID: p.ID,
-				ImageURL:   "https://storage.properti.com/" + p.Title + "/ruang-tamu.jpg",
-				IsPrimary:  false,
-				SortOrder:  2,
-			},
-			{
-				PropertyID: p.ID,
-				ImageURL:   "https://storage.properti.com/" + p.Title + "/kamar-utama.jpg",
-				IsPrimary:  false,
-				SortOrder:  3,
-			},
+		imgs, ok := imagesByTitle[p.Title]
+		if !ok {
+			continue
 		}
-		for _, img := range images {
-			db.Where("property_id = ? AND image_url = ?", img.PropertyID, img.ImageURL).FirstOrCreate(&img)
+		db.Unscoped().Where("property_id = ?", p.ID).Delete(&model.PropertyImage{})
+		for _, img := range imgs {
+			img.PropertyID = p.ID
+			db.Create(&img)
 		}
 	}
-	logger.Log.Debug("OK PropertyImgages seeded")
+	logger.Log.Debug("OK PropertyImages seeded")
 }
 
 // 8. PROPERTY FACILITIES
