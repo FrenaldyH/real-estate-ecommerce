@@ -1,7 +1,6 @@
 .env
 .git
 .gitignore
-.claude
 logs/
 docs/
 *.md
