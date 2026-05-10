@@ -11,6 +11,7 @@ import (
 type PropertyFacilityRepository interface {
 	Create(pf *model.PropertyFacility) error
 	FindByID(id uint) (*model.PropertyFacility, error)
+	FindByPropertyID(id uint) ([]model.PropertyFacility, error)
 	FindByPropertyIDAndFacilityTypeID(propertyID uint, facilityTypeID uint) (*model.PropertyFacility, error)
 	FindAll() ([]model.PropertyFacility, error)
 	Update(id uint, data map[string]any) error

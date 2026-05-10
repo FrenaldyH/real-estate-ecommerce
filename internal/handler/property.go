@@ -23,6 +23,9 @@ type PropertyHandler interface {
 	DeleteProperty(c *gin.Context)
 	PostPropertyImage(c *gin.Context)
 	DeletePropertyImage(c *gin.Context)
+	PostFacility(c *gin.Context)
+	PutFacility(c *gin.Context)
+	DeleteFacility(c *gin.Context)
 }
 
 // Implement
@@ -357,4 +360,109 @@ func (h *propertyHandler) DeletePropertyImage(c *gin.Context) {
 	}
 
 	response.OK(c, "Image successfully deleted", nil)
+}
+
+func (h *propertyHandler) PostFacility(c *gin.Context) {
+	username, err := getUsernameFromContext(c)
+	if err != nil {
+		response.Unauthorized(c)
+		return
+	}
+
+	propertyID, err := parsePropertyID(c)
+	if err != nil {
+		response.ValidationError(c, "Invalid property ID")
+		return
+	}
+
+	var req dto.CreatePropertyFacilityRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	res, err := h.propertyService.AddFacility(username, propertyID, req)
+	if err != nil {
+		if err.Error() == "unauthorized: you do not own this property" {
+			response.Forbidden(c)
+			return
+		}
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	response.Created(c, "Facility added successfully", res)
+}
+
+func (h *propertyHandler) PutFacility(c *gin.Context) {
+	username, err := getUsernameFromContext(c)
+	if err != nil {
+		response.Unauthorized(c)
+		return
+	}
+
+	propertyID, err := parsePropertyID(c)
+	if err != nil {
+		response.ValidationError(c, "Invalid property ID")
+		return
+	}
+
+	facilityIDStr := c.Param("facility_id")
+	facilityID, err := strconv.ParseUint(facilityIDStr, 10, 64)
+	if err != nil {
+		response.ValidationError(c, "Invalid facility ID")
+		return
+	}
+
+	var body struct {
+		Amount int `json:"amount" binding:"required,gte=1"`
+	}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	res, err := h.propertyService.UpdateFacility(username, propertyID, uint(facilityID), body.Amount)
+	if err != nil {
+		if err.Error() == "unauthorized: you do not own this property" {
+			response.Forbidden(c)
+			return
+		}
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	response.OK(c, "Facility updated successfully", res)
+}
+
+func (h *propertyHandler) DeleteFacility(c *gin.Context) {
+	username, err := getUsernameFromContext(c)
+	if err != nil {
+		response.Unauthorized(c)
+		return
+	}
+
+	propertyID, err := parsePropertyID(c)
+	if err != nil {
+		response.ValidationError(c, "Invalid property ID")
+		return
+	}
+
+	facilityIDStr := c.Param("facility_id")
+	facilityID, err := strconv.ParseUint(facilityIDStr, 10, 64)
+	if err != nil {
+		response.ValidationError(c, "Invalid facility ID")
+		return
+	}
+
+	if err := h.propertyService.RemoveFacility(username, propertyID, uint(facilityID)); err != nil {
+		if err.Error() == "unauthorized: you do not own this property" {
+			response.Forbidden(c)
+			return
+		}
+		response.InternalError(c, err.Error())
+		return
+	}
+
+	response.OK(c, "Facility deleted successfully", nil)
 }

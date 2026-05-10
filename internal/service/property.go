@@ -28,6 +28,9 @@ type PropertyService interface {
 	DeletePropertyByAgent(username string, propertyID uint) error
 	CreateImageByAgent(username string, propertyID uint, req dto.CreateImageRequest) (*dto.CreateImageResponse, error)
 	DeleteImage(username string, propertyID uint, imageID uint) error
+	AddFacility(username string, propertyID uint, req dto.CreatePropertyFacilityRequest) (*dto.PropertyFacilityResponse, error)
+	UpdateFacility(username string, propertyID uint, facilityID uint, amount int) (*dto.PropertyFacilityResponse, error)
+	RemoveFacility(username string, propertyID uint, facilityID uint) error
 }
 
 // Implement
@@ -421,4 +424,98 @@ func (s *propertyService) DeleteImage(username string, propertyID uint, imageID 
 	}
 
 	return nil
+}
+
+func (s *propertyService) AddFacility(username string, propertyID uint, req dto.CreatePropertyFacilityRequest) (*dto.PropertyFacilityResponse, error) {
+	agentID, err := s.agentRepo.FindAgentIDByUsername(username)
+	if err != nil {
+		return nil, errors.New("agent not found")
+	}
+
+	p, err := s.repo.FindByID(propertyID)
+	if err != nil {
+		return nil, errors.New("property not found")
+	}
+	if p.AgentID != agentID {
+		return nil, errors.New("unauthorized: you do not own this property")
+	}
+
+	pf := &model.PropertyFacility{
+		PropertyID:     propertyID,
+		FacilityTypeID: req.FacilityTypeID,
+		Amount:         req.Amount,
+	}
+	if err := s.facilityRepo.Create(pf); err != nil {
+		return nil, errors.New("failed to add facility")
+	}
+
+	pf, err = s.facilityRepo.FindByID(pf.ID)
+	if err != nil {
+		return nil, errors.New("failed to fetch created facility")
+	}
+
+	return &dto.PropertyFacilityResponse{
+		ID:     pf.ID,
+		Amount: pf.Amount,
+		FacilityType: dto.FacilityTypeResponse{
+			ID:   pf.FacilityType.ID,
+			Name: pf.FacilityType.Name,
+		},
+	}, nil
+}
+
+func (s *propertyService) UpdateFacility(username string, propertyID uint, facilityID uint, amount int) (*dto.PropertyFacilityResponse, error) {
+	agentID, err := s.agentRepo.FindAgentIDByUsername(username)
+	if err != nil {
+		return nil, errors.New("agent not found")
+	}
+
+	p, err := s.repo.FindByID(propertyID)
+	if err != nil {
+		return nil, errors.New("property not found")
+	}
+	if p.AgentID != agentID {
+		return nil, errors.New("unauthorized: you do not own this property")
+	}
+
+	pf, err := s.facilityRepo.FindByID(facilityID)
+	if err != nil || pf.PropertyID != propertyID {
+		return nil, errors.New("facility not found for this property")
+	}
+
+	if err := s.facilityRepo.Update(facilityID, map[string]any{"amount": amount}); err != nil {
+		return nil, errors.New("failed to update facility")
+	}
+
+	pf, _ = s.facilityRepo.FindByID(facilityID)
+	return &dto.PropertyFacilityResponse{
+		ID:     pf.ID,
+		Amount: pf.Amount,
+		FacilityType: dto.FacilityTypeResponse{
+			ID:   pf.FacilityType.ID,
+			Name: pf.FacilityType.Name,
+		},
+	}, nil
+}
+
+func (s *propertyService) RemoveFacility(username string, propertyID uint, facilityID uint) error {
+	agentID, err := s.agentRepo.FindAgentIDByUsername(username)
+	if err != nil {
+		return errors.New("agent not found")
+	}
+
+	p, err := s.repo.FindByID(propertyID)
+	if err != nil {
+		return errors.New("property not found")
+	}
+	if p.AgentID != agentID {
+		return errors.New("unauthorized: you do not own this property")
+	}
+
+	pf, err := s.facilityRepo.FindByID(facilityID)
+	if err != nil || pf.PropertyID != propertyID {
+		return errors.New("facility not found for this property")
+	}
+
+	return s.facilityRepo.Delete(facilityID)
 }

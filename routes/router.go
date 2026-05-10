@@ -12,6 +12,7 @@ import (
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/service"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/gemini"
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/logger"
+	"github.com/FrenaldyH/real-estate-ecommerce/backend/pkg/response"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -47,6 +48,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	propertyRepo := repository.NewPropertyRepository(db)
 	imageRepo := repository.NewPropertyImageRepository(db)
 	facilityRepo := repository.NewPropertyFacilityRepository(db)
+	facilityTypeRepo := repository.NewFacilityTypeRepository(db)
 	wishlistRepo := repository.NewWishlistRepository(db)
 	reviewRepo := repository.NewReviewRepository(db)
 	knowledgeRepo := repository.NewKnowledgeRepository(db)
@@ -83,6 +85,24 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	}()
 
 	api := r.Group("/api")
+
+	// [FACILITY TYPE - public]
+	api.GET("/facility-type", func(c *gin.Context) {
+		types, err := facilityTypeRepo.FindAll()
+		if err != nil {
+			response.InternalError(c, err.Error())
+			return
+		}
+		type ft struct {
+			ID   uint   `json:"id"`
+			Name string `json:"name"`
+		}
+		var res []ft
+		for _, t := range types {
+			res = append(res, ft{ID: t.ID, Name: t.Name})
+		}
+		response.OK(c, "Facility types fetched", res)
+	})
 
 	// AI
 	ai := api.Group("/ai")
@@ -137,6 +157,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 			protectedProperty.POST("/:id/image", propertyHandler.PostPropertyImage)
 			protectedProperty.DELETE("/:id/image/:image_id", propertyHandler.DeletePropertyImage)
+
+			protectedProperty.POST("/:id/facility", propertyHandler.PostFacility)
+			protectedProperty.PUT("/:id/facility/:facility_id", propertyHandler.PutFacility)
+			protectedProperty.DELETE("/:id/facility/:facility_id", propertyHandler.DeleteFacility)
 		}
 	}
 
