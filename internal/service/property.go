@@ -88,6 +88,18 @@ func mapToListResponse(p model.Property) dto.PropertyListResponse {
 		}
 	}
 
+	// Facilities
+	for _, f := range p.Facilities {
+		res.Facilities = append(res.Facilities, dto.PropertyFacilityResponse{
+			ID: f.ID,
+			FacilityType: dto.FacilityTypeResponse{
+				ID:   f.FacilityType.ID,
+				Name: f.FacilityType.Name,
+			},
+			Amount: f.Amount,
+		})
+	}
+
 	return res
 }
 

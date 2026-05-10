@@ -27,16 +27,17 @@ type PropertyImageResponse struct {
 
 // Response ringkas
 type PropertyListResponse struct {
-	ID           uint                   `json:"id"`
-	AgentID      uint                   `json:"agent_id"`
-	Title        string                 `json:"title"`
-	Price        float64                `json:"price"`
-	City         string                 `json:"city"`
-	Province     string                 `json:"province"`
-	ListingType  model.ListingType      `json:"listing_type"`
-	Status       model.PropertyStatus   `json:"status"`
-	PropertyType PropertyTypeResponse   `json:"property_type"`
-	PrimaryImage *PropertyImageResponse `json:"primary_image,omitempty"`
+	ID           uint                       `json:"id"`
+	AgentID      uint                       `json:"agent_id"`
+	Title        string                     `json:"title"`
+	Price        float64                    `json:"price"`
+	City         string                     `json:"city"`
+	Province     string                     `json:"province"`
+	ListingType  model.ListingType          `json:"listing_type"`
+	Status       model.PropertyStatus       `json:"status"`
+	PropertyType PropertyTypeResponse       `json:"property_type"`
+	PrimaryImage *PropertyImageResponse     `json:"primary_image,omitempty"`
+	Facilities   []PropertyFacilityResponse `json:"facilities,omitempty"`
 }
 
 type PropertyDetailResponse struct {
