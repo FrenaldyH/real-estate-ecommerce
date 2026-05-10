@@ -186,3 +186,8 @@ VITE_CLOUDINARY_UPLOAD_PRESET=your-preset
 
 1. Dimas Setiaji
 2. Frenaldy Bestabba Hasugian
+
+## Tantangan Selama Pengembangan
+- Bug saat deploy
+- Ketinggalan endpoint
+- Penyimpanan dan pengkonversian image
