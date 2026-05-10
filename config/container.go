@@ -1,7 +1,11 @@
 package config
 
+import "os"
+
 func InitDB() {
 	connectDB()
-	dropDB()
+	if os.Getenv("APP_ENV") == "development" {
+		dropDB()
+	}
 	migrateDB()
 }

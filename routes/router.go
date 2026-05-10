@@ -3,6 +3,7 @@ package routes
 import (
 	"context"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/FrenaldyH/real-estate-ecommerce/backend/internal/handler"
@@ -25,8 +26,14 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
 	// [CORS]
+	allowedOrigins := []string{"http://localhost:5173", "http://localhost:3000"}
+	if frontendURL := os.Getenv("FRONTEND_URL"); frontendURL != "" {
+		for _, u := range strings.Split(frontendURL, ",") {
+			allowedOrigins = append(allowedOrigins, strings.TrimSpace(u))
+		}
+	}
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://example.com"},
+		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
