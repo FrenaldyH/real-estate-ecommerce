@@ -94,6 +94,11 @@ func (s *agentService) CreateAgent(username string, req dto.CreateAgentRequest) 
 		return nil, errors.New("Failed to create agent")
 	}
 
+	if _, err := s.userRepo.Update(user.ID, map[string]any{"role": model.RoleAgent}); err != nil {
+		logger.Log.Error("Failed to update user role to agent")
+		return nil, errors.New("Failed to update user role to agent")
+	}
+
 	agentFull, err := s.repo.FindByID(agent.ID)
 	if err != nil {
 		logger.Log.Info("Failed to get agent data")
